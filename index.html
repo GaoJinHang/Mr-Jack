@@ -1254,6 +1254,71 @@ const ACTION_TOKENS_DEF = [
 
 const PLAYER = { INV:"INV", JACK:"JACK" };
 
+const SKINS = {
+  classic: {
+    label: "经典版",
+    jack: "Jack",
+    inv: "调查员",
+    suspects: {
+      GULL:"William Gull", PIZER:"John Pizer", SMITH:"John Smith", LESTRADE:"Insp. Lestrade", LANE:"Joseph Lane",
+      STEALTHY:"Miss Stealthy", GOODLEY:"Sgt. Goodley", MADAME:"Madame", BERT:"Jeremy Bert"
+    },
+    detectives: { HOLMES:"Holmes", WATSON:"Watson", TOBY:"Toby" },
+    markers: { HOLMES:"H", WATSON:"W", TOBY:"T" }
+  },
+  bao: {
+    label: "少年包青天版",
+    jack: "真凶",
+    inv: "调查员",
+    suspects: {
+      GULL:"沈良", PIZER:"蒙放", SMITH:"常雨", LESTRADE:"卓云", LANE:"崔明冲",
+      STEALTHY:"戒贤", GOODLEY:"康乔", MADAME:"丫头", BERT:"秀珠"
+    },
+    detectives: { HOLMES:"包拯", WATSON:"公孙策", TOBY:"展昭" },
+    markers: { HOLMES:"包拯", WATSON:"公孙策", TOBY:"展昭" }
+  },
+  di: {
+    label: "神探狄仁杰版",
+    jack: "真凶",
+    inv: "调查员",
+    suspects: {
+      GULL:"金木兰", PIZER:"虎敬晖", SMITH:"许世德", LESTRADE:"太平公主", LANE:"肖清芳",
+      STEALTHY:"袁天罡", GOODLEY:"薛青麟", MADAME:"小桃", BERT:"薇儿"
+    },
+    detectives: { HOLMES:"狄仁杰", WATSON:"曾泰", TOBY:"李元芳" },
+    markers: { HOLMES:"狄仁杰", WATSON:"曾泰", TOBY:"李元芳" }
+  }
+};
+let currentSkinKey = "classic";
+function activeSkin(){
+  return SKINS[currentSkinKey] || SKINS.classic;
+}
+function skinSuspectName(sid){
+  const s = activeSkin().suspects[sid];
+  if(s) return s;
+  const base = SUSPECTS.find(x=>x.id===sid);
+  return base ? base.zh : sid;
+}
+function skinDetName(det){
+  return activeSkin().detectives[det] || det;
+}
+function skinDetMark(det){
+  return activeSkin().markers[det] || skinDetName(det);
+}
+function skinJackName(){
+  return activeSkin().jack || "Jack";
+}
+function skinInvName(){
+  return activeSkin().inv || "调查员";
+}
+function skinActorName(who){
+  return who===PLAYER.JACK ? skinJackName() : skinInvName();
+}
+function canSwitchSkin(){
+  return GameState.phase==="SETUP" && !GameState.jack.identity;
+}
+
+
 /** 外圈 12 格，顺时针索引（0..11） */
 function detDir(pos){
   if (pos>=0 && pos<=2) return "S";
@@ -1393,7 +1458,7 @@ _rotateWallToFace(INIT_DETECTIVES.TOBY);
       actionHint: null       // 轻提示（短暂显示）
     },
 
-    log: [`${nowStr()} 准备中：请让 Jack 抽身份后开始。`],
+    log: [`${nowStr()} 准备中：请让 ${skinJackName()} 抽身份后开始。`],
   };
 }
 
@@ -1575,8 +1640,8 @@ const Rules = {
 
     const afterSus = Rules.countSuspects(state);
 
-    state.log.push(`${nowStr()} 目击：Jack ${jackVisible ? "可见" : "不可见"}；翻掉嫌疑 ${toClear.length} 张（${beforeSus} → ${afterSus}）。`);
-    state.log.push(`${nowStr()} 回合 token：${jackVisible ? "调查员获得" : "Jack 获得(+1公开沙漏)"}。`);
+    state.log.push(`${nowStr()} 目击：${skinJackName()} ${jackVisible ? "可见" : "不可见"}；翻掉嫌疑 ${toClear.length} 张（${beforeSus} → ${afterSus}）。`);
+    state.log.push(`${nowStr()} 回合 token：${jackVisible ? skinInvName()+"获得" : skinJackName()+"获得(+1公开沙漏)"}。`);
 
     // 胜负判定
     const result = Rules.checkWin(state, jackVisible);
@@ -1600,10 +1665,10 @@ const Rules = {
     // 追逐模式：只看“是否被看到”与“是否到第8回合”
     if(state.raceMode){
       if(jackVisibleNow){
-        return { over:true, winner: PLAYER.INV, reason:"追逐模式：Jack 被看到" };
+        return { over:true, winner: PLAYER.INV, reason:`追逐模式：${skinJackName()} 被看到` };
       }
       if(state.turn>=8){
-        return { over:true, winner: PLAYER.JACK, reason:"追逐模式：Jack 撑到第8回合仍未被看到" };
+        return { over:true, winner: PLAYER.JACK, reason:`追逐模式：${skinJackName()} 撑到第8回合仍未被看到` };
       }
       return { over:false };
     }
@@ -1619,10 +1684,10 @@ const Rules = {
       }else{
         // 未到第8回合：若此刻已可见，则可视为追逐立刻结束；否则进入追逐模式
         if(jackVisibleNow){
-          return { over:true, winner: PLAYER.INV, reason:"同步达成且当回合 Jack 可见：立即抓到" };
+          return { over:true, winner: PLAYER.INV, reason:`同步达成且当回合 ${skinJackName()} 可见：立即抓到` };
         }
         state.raceMode = true;
-        state.log.push(`${nowStr()} 同步达成(嫌疑=1 且 Jack≥6沙漏)：进入追逐模式！直到 Jack 被看到或第8回合结束。`);
+        state.log.push(`${nowStr()} 同步达成(嫌疑=1 且 ${skinJackName()}≥6沙漏)：进入追逐模式！直到 ${skinJackName()} 被看到或第8回合结束。`);
         return { over:false, raceMode:true };
       }
     }
@@ -1631,12 +1696,12 @@ const Rules = {
       return { over:true, winner: PLAYER.INV, reason:"只剩 1 名嫌疑人" };
     }
     if(jackWin){
-      return { over:true, winner: PLAYER.JACK, reason:"Jack 沙漏 ≥ 6" };
+      return { over:true, winner: PLAYER.JACK, reason:`${skinJackName()} 沙漏 ≥ 6` };
     }
 
     // 第8回合结束仍无人达成：默认 Jack 胜（成功逃脱）
     if(state.turn>=8){
-      return { over:true, winner: PLAYER.JACK, reason:"第8回合结束仍未抓到：Jack 逃脱" };
+      return { over:true, winner: PLAYER.JACK, reason:`第8回合结束仍未抓到：${skinJackName()} 逃脱` };
     }
     return { over:false };
   },
@@ -1714,13 +1779,24 @@ const Actions = {
 
     GameState.remainingTokenIds = GameState.remainingTokenIds.filter(x=>x!==tokenId);
     GameState.chosenTokenIds.push(tokenId);
-    Actions.log(`${by==="INV"?"调查员":"Jack"} 选择行动：${Render.actName(action)}（token #${tokenId+1}）`);
+    Actions.log(`${skinActorName(by)} 选择行动：${Render.actName(action)}（token #${tokenId+1}）`);
   },
 
   log(msg){ GameState.log.push(`${nowStr()} ${msg}`); },
 
   restart(){
     GameState = createNewGameState();
+    Render.render();
+  },
+
+  setSkin(key){
+    if(!SKINS[key]) return;
+    if(!canSwitchSkin()){
+      Actions.hint("皮肤只能在抽身份牌前切换");
+      return;
+    }
+    currentSkinKey = key;
+    GameState.log = [`${nowStr()} 准备中：已切换为「${activeSkin().label}」。请让 ${skinJackName()} 抽身份后开始。`];
     Render.render();
   },
 
@@ -1735,7 +1811,7 @@ const Actions = {
     GameState.jack.secretCards = [];
     GameState.jack.secretHg = 0;
     GameState.jack.publicHg = 0;
-    Actions.log(`Jack 已抽取身份牌（已隐藏）。Alibi 牌库剩余 ${GameState.alibiDeck.length} 张。`);
+    Actions.log(`${skinJackName()} 已抽取身份牌（已隐藏）。Alibi 牌库剩余 ${GameState.alibiDeck.length} 张。`);
 
     // 让 Jack 私密查看身份
     Actions.pushOverlay({
@@ -1747,7 +1823,7 @@ const Actions = {
   // 开始第一回合
   startGame(){
     if(!GameState.jack.identity){
-      Actions.pushOverlay({ type:"INFO", title:"还没抽身份", text:"请先让 Jack 点击“抽身份牌”。" });
+      Actions.pushOverlay({ type:"INFO", title:"还没抽身份", text:`请先让 ${skinJackName()} 点击“抽身份牌”。` });
       return;
     }
     GameState.phase = "ACTION";
@@ -1818,7 +1894,7 @@ const Actions = {
     const curPos = GameState.detectives[det];
     const newPos = (curPos + steps) % 12;
     GameState.detectives[det]=newPos;
-    Actions.log(`${det==="TOBY"?"Toby":det} 顺时针移动 ${steps} 格（${curPos}→${newPos}）`);
+    Actions.log(`${Render.detName(det)} 顺时针移动 ${steps} 格（${curPos}→${newPos}）`);
     Actions.commitToken();
     Actions.exitActionMode();
     Actions.advanceStep();
@@ -1829,7 +1905,7 @@ const Actions = {
     if(moved){
       Actions.doMove(det, 1);
     }else{
-      Actions.log(`Jack Joker 选择不移动`);
+      Actions.log(`${skinJackName()} Joker 选择不移动`);
       Actions.commitToken();
       Actions.exitActionMode();
       Actions.advanceStep();
@@ -2003,7 +2079,7 @@ const Actions = {
         type:"ALIBI_REVEAL_JACK",
         sid, hg
       });
-      Actions.log(`Jack 抽取 Alibi（已隐藏）。`);
+      Actions.log(`${skinJackName()} 抽取 Alibi（已隐藏）。`);
       return;
     }
   },
@@ -2048,7 +2124,7 @@ const Actions = {
         reason: result.reason,
         jackVisible
       };
-      Actions.log(`游戏结束：${result.winner==="INV"?"调查员胜":"Jack胜"}（${result.reason}）`);
+      Actions.log(`游戏结束：${result.winner==="INV"?skinInvName()+"胜":skinJackName()+"胜"}（${result.reason}）`);
       Render.render();
       return;
     }
@@ -2184,9 +2260,9 @@ const Render = {
   actName(act){
     switch(act){
       case ACT.ALIBI: return "抽牌";
-      case ACT.HOLMES: return "Holmes";
-      case ACT.WATSON: return "Watson";
-      case ACT.DOG: return "Toby";
+      case ACT.HOLMES: return skinDetName("HOLMES");
+      case ACT.WATSON: return skinDetName("WATSON");
+      case ACT.DOG: return skinDetName("TOBY");
       case ACT.ROTATE: return "旋转";
       case ACT.EXCHANGE: return "交换";
       case ACT.JOKER: return "移动侦探";
@@ -2194,8 +2270,16 @@ const Render = {
     }
   },
   suspectName(sid){
-    const s = SUSPECTS.find(x=>x.id===sid);
-    return s ? s.zh : sid;
+    return skinSuspectName(sid);
+  },
+  detName(det){
+    return skinDetName(det);
+  },
+  jackName(){
+    return skinJackName();
+  },
+  invName(){
+    return skinInvName();
   },
   nameTwoLines(name){
     if(!name) return "";
@@ -2235,11 +2319,12 @@ const Render = {
     const cur = Rules.currentPlayer(GameState);
     // Jack 私密按钮：仅在规则允许时显示/可用
     const btnSecret = document.getElementById("btnJackSecret");
+    btnSecret.textContent = `${Render.jackName()} 私密`;
     const allowSecret = (GameState.phase==="ACTION" && Rules.currentPlayer(GameState)===PLAYER.JACK);
     btnSecret.disabled = !allowSecret;
     btnSecret.style.display = "";
     const curTxt = GameState.phase==="ACTION"
-      ? (cur===PLAYER.JACK?"杰克行动":"调查员行动")
+      ? (cur===PLAYER.JACK?`${Render.jackName()}行动`:`${Render.invName()}行动`)
       : GameState.phase==="WITNESS"
         ? "目击阶段"
         : GameState.phase==="SETUP"
@@ -2284,7 +2369,7 @@ renderActionMode(){
   const cancelBtn = `<button class="ghost" id="amCancel">取消</button>`;
 
   if(am.type==="MOVE"){
-    const detName = am.det==="TOBY"?"Toby":"Holmes/Watson".includes(am.det)?am.det:(am.det||"");
+    const detName = Render.detName(am.det);
     box.innerHTML = `
       <div class="hint">选择移动 ${detName} 的步数 ${hintMsg}</div>
       <div class="row">
@@ -2304,9 +2389,9 @@ renderActionMode(){
     box.innerHTML = `
       <div class="hint">选择要移动的侦探（顺时针 1 格）${allowSkip?"，或选择不动":""} ${hintMsg}</div>
       <div class="row">
-        <button class="primary" id="amJH">Holmes</button>
-        <button class="primary" id="amJW">Watson</button>
-        <button class="primary" id="amJT">Toby</button>
+        <button class="primary" id="amJH">${Render.detName("HOLMES")}</button>
+        <button class="primary" id="amJW">${Render.detName("WATSON")}</button>
+        <button class="primary" id="amJT">${Render.detName("TOBY")}</button>
         ${allowSkip?`<button class="ghost" id="amSkip">不移动</button>`:""}
         ${cancelBtn}
       </div>
@@ -2404,22 +2489,16 @@ renderActionMode(){
     ringAt["4,3"]=6; ringAt["4,2"]=7; ringAt["4,1"]=8;
     ringAt["3,0"]=9; ringAt["2,0"]=10; ringAt["1,0"]=11;
 
-    // detective markers on ring positions (H/W/T). If multiple, show with "/" (e.g., H/T, HW/T)
+    // detective markers on ring positions. If multiple, show with "/".
     const detMark = {};
     for(const det of ["HOLMES","WATSON","TOBY"]){
       const pos = GameState.detectives[det];
-      detMark[pos] = detMark[pos] || {H:false,W:false,T:false};
-      if(det==="HOLMES") detMark[pos].H = true;
-      else if(det==="WATSON") detMark[pos].W = true;
-      else detMark[pos].T = true;
+      detMark[pos] = detMark[pos] || [];
+      detMark[pos].push(skinDetMark(det));
     }
     function fmtMarks(m){
       if(!m) return "";
-      const hw = (m.H?"H":"") + (m.W?"W":"");
-      const parts = [];
-      if(hw) parts.push(hw);
-      if(m.T) parts.push("T");
-      return parts.join("/");
+      return m.join("/");
     }
 
     // 街区牌渲染规则：只显示「名字(仅 faceUp=true)」与「墙」。不显示 rot/可见性/排除标记等。
@@ -2501,7 +2580,7 @@ renderActions(){
 
   if(GameState.phase==="ACTION"){
     const who = Rules.currentPlayer(GameState);
-    titleEl.textContent = `行动 ${GameState.step+1}/4 · ${who==="INV"?"调查员":"Jack"}`;
+    titleEl.textContent = `行动 ${GameState.step+1}/4 · ${skinActorName(who)}`;
     btnWitness.disabled = true;
 
     const opts = GameState.tokens.map(t=>{
@@ -2539,10 +2618,19 @@ renderActions(){
     btnWitness.disabled = true;
     titleEl.textContent = "开局设置";
     const hasId = !!GameState.jack.identity;
+    const skinBtns = !hasId ? `
+      <div style="grid-column:1 / -1; display:flex; flex-direction:column; gap:6px; margin-bottom:2px;">
+        <div style="font-size:12px;color:rgba(232,238,247,.78);font-weight:700;">皮肤：${activeSkin().label}（仅抽身份牌前可切换）</div>
+        <div style="display:flex; gap:8px; flex-wrap:nowrap;">
+          ${Object.keys(SKINS).map(k=>`<button class="${k===currentSkinKey?"primary":"ghost"}" data-skin="${k}" style="flex:1; min-width:0;">${SKINS[k].label}</button>`).join("")}
+        </div>
+      </div>
+    ` : "";
     actionsEl.innerHTML = `
 </div>
+      ${skinBtns}
       <div style="grid-column:1 / -1; display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="primary" id="btnDrawId" style="flex:1;" ${hasId?"disabled":""}>Jack抽身份牌<br><span style="font-size:11px;font-weight:normal;">请确保调查员不在看屏幕</span></button>
+        <button class="primary" id="btnDrawId" style="flex:1;" ${hasId?"disabled":""}>${skinJackName()}抽身份牌<br><span style="font-size:11px;font-weight:normal;">请确保${skinInvName()}不在看屏幕</span></button>
         <button class="primary" id="btnStart" style="flex:1;" ${hasId?"":"disabled"}>开始第1回合</button>
       </div>
     `;
@@ -2555,7 +2643,7 @@ renderActions(){
   actionsEl.innerHTML = `
     <div class="actionBtn" style="grid-column: 1 / -1;">
       <div class="title">点击右上角“重开”开始新局</div>
-      <div class="meta">或点击“Jack 私密”查看身份与隐藏Alibi。</div>
+      <div class="meta">或点击“${skinJackName()} 私密”查看身份与隐藏Alibi。</div>
     </div>
   `;
 },
@@ -2583,7 +2671,7 @@ renderActions(){
     const footer = (btns)=> `<div class="footerBtns">${btns.join("")}</div>`;
 
     if(o.type==="PASS"){
-      const who = o.who==="INV" ? "调查员" : "Jack";
+      const who = o.who==="INV" ? skinInvName() : skinJackName();
       ov.innerHTML = `
         <div class="sheet">
           <h2>交接手机</h2>
@@ -2615,9 +2703,9 @@ renderActions(){
       const name = sid ? Render.suspectName(sid) : "（未知）";
       ov.innerHTML = `
         <div class="sheet">
-          <h2>Jack 私密：你的身份是</h2>
+          <h2>${skinJackName()} 私密：你的身份是</h2>
           <p style="font-size:14px;"><b>${name}</b></p>
-          <p class="hint">请确保调查员不在看屏幕。确认后将进入游戏。</p>
+          <p class="hint">请确保${skinInvName()}不在看屏幕。确认后将进入游戏。</p>
           ${footer([
             `<button class="primary" id="ovIdOk">我已记住</button>`
           ])}
@@ -2650,9 +2738,9 @@ renderActions(){
       const total = Rules.jackTotalHg(GameState);
       ov.innerHTML = `
         <div class="sheet">
-          <h2>Jack 私密：Alibi</h2>
+          <h2>${skinJackName()} 私密：Alibi</h2>
           <p>你抽到：<b>${Render.suspectName(o.sid)}</b>（隐藏沙漏 +${o.hg}）</p>
-          <p class="hint">你的总沙漏（含公开+隐藏）现在是：<b>${total}</b>。请勿让调查员看到。</p>
+          <p class="hint">你的总沙漏（含公开+隐藏）现在是：<b>${total}</b>。请勿让${skinInvName()}看到。</p>
           ${footer([`<button class="primary" id="ovAlibiJackOk">我已看完</button>`])}
         </div>
       `;
@@ -2664,12 +2752,12 @@ renderActions(){
     }
 
     if(o.type==="GAME_OVER"){
-      const who = o.winner==="INV" ? "调查员胜利" : "Jack 胜利";
+      const who = o.winner==="INV" ? `${skinInvName()}胜利` : `${skinJackName()} 胜利`;
       ov.innerHTML = `
         <div class="sheet">
           <h2>${who}</h2>
           <p>${o.reason || ""}</p>
-          <p class="hint">你可以点“Jack 私密”查看身份与隐藏 Alibi；或点右上角“重开”。</p>
+          <p class="hint">你可以点“${skinJackName()} 私密”查看身份与隐藏 Alibi；或点右上角“重开”。</p>
           ${footer([`<button class="primary" id="ovEndOk">关闭</button>`])}
         </div>
       `;
@@ -2682,11 +2770,11 @@ renderActions(){
         <div class="sheet">
           <h2>规则速览（Pocket）</h2>
           <p><b>回合</b>：最多8回合；每回合=行动阶段(选4次行动) + 目击阶段(翻嫌疑)。</p>
-          <p><b>奇数回合</b>：随机“掷出”4枚行动token；选择顺序：调查员 → Jack → Jack → 调查员。</p>
-          <p><b>偶数回合</b>：4枚token全部翻面；选择顺序：Jack → 调查员 → 调查员 → Jack。</p>
-          <p><b>行动</b>：Holmes/Watson/Toby 移动1或2；Joker(调查员必须移动1格，Jack可不动)；旋转(90/180，同回合不可旋同一张两次)；交换(不改变朝向)；Alibi(调查员公开洗清；Jack私密得沙漏)。</p>
-          <p><b>目击</b>：系统按墙阻挡的直线视线判定Jack是否可见。可见→翻掉所有“不可见”的嫌疑；不可见→翻掉所有“可见”的嫌疑。可见则回合token给调查员；不可见则给Jack(+1公开沙漏)。</p>
-          <p><b>胜利</b>：嫌疑只剩1→调查员胜；Jack总沙漏(公开+隐藏)≥6→Jack胜；若同步达成且未到第8回合→追逐模式(直到Jack被看到或第8回合结束)。</p>
+          <p><b>奇数回合</b>：随机“掷出”4枚行动token；选择顺序：${skinInvName()} → ${skinJackName()} → ${skinJackName()} → ${skinInvName()}。</p>
+          <p><b>偶数回合</b>：4枚token全部翻面；选择顺序：${skinJackName()} → ${skinInvName()} → ${skinInvName()} → ${skinJackName()}。</p>
+          <p><b>行动</b>：${Render.detName("HOLMES")}/${Render.detName("WATSON")}/${Render.detName("TOBY")} 移动1或2；Joker(${skinInvName()}必须移动1格，${skinJackName()}可不动)；旋转(90/180，同回合不可旋同一张两次)；交换(不改变朝向)；Alibi(${skinInvName()}公开洗清；${skinJackName()}私密得沙漏)。</p>
+          <p><b>目击</b>：系统按墙阻挡的直线视线判定${skinJackName()}是否可见。可见→翻掉所有“不可见”的嫌疑；不可见→翻掉所有“可见”的嫌疑。可见则回合token给${skinInvName()}；不可见则给${skinJackName()}(+1公开沙漏)。</p>
+          <p><b>胜利</b>：嫌疑只剩1→${skinInvName()}胜；${skinJackName()}总沙漏(公开+隐藏)≥6→${skinJackName()}胜；若同步达成且未到第8回合→追逐模式(直到${skinJackName()}被看到或第8回合结束)。</p>
           ${footer([`<button class="primary" id="closeRules">关闭</button>`])}
         </div>
       `;
@@ -2701,10 +2789,10 @@ renderActions(){
       const cards = GameState.jack.secretCards.map(c=>`<div class="item"><div class="left"><div class="t">${Render.suspectName(c.suspectId)}</div><div class="d">隐藏沙漏 +${c.hg}</div></div></div>`).join("");
       ov.innerHTML = `
         <div class="sheet">
-          <h2>Jack 私密信息</h2>
+          <h2>${skinJackName()} 私密信息</h2>
           <p><b>身份：</b>${idName}</p>
           <p><b>公开沙漏：</b>${GameState.jack.publicHg}　<b>隐藏沙漏：</b>${GameState.jack.secretHg}　<b>总计：</b>${total}</p>
-          <p class="hint">以下 Alibi 仅 Jack 可见：</p>
+          <p class="hint">以下 Alibi 仅 ${skinJackName()} 可见：</p>
           <div class="list">
             ${cards || `<div class="item"><div class="left"><div class="t">暂无</div><div class="d">还没有抽到隐藏 Alibi。</div></div></div>`}
           </div>
@@ -2799,9 +2887,9 @@ renderActions(){
           <h2>${o.title}</h2>
           <p class="hint">选择要移动的侦探（顺时针 1 格）。${allowSkip?"也可选择不动。":""}</p>
           <div class="row">
-            <button class="primary" id="jH">Holmes</button>
-            <button class="primary" id="jW">Watson</button>
-            <button class="primary" id="jT">Toby</button>
+            <button class="primary" id="jH">${Render.detName("HOLMES")}</button>
+            <button class="primary" id="jW">${Render.detName("WATSON")}</button>
+            <button class="primary" id="jT">${Render.detName("TOBY")}</button>
           </div>
           ${footer([
             allowSkip ? `<button class="ghost" id="jSkip">不移动</button>` : ``,
@@ -2923,7 +3011,7 @@ if(btnPassHint){
 }
 document.getElementById("btnJackSecret").onclick = ()=>{
   if(!Rules.canViewJackSecret(GameState)){
-    Actions.hint("当前阶段不允许查看 Jack 私密");
+    Actions.hint(`当前阶段不允许查看 ${skinJackName()} 私密`);
     return;
   }
   Actions.pushOverlay({ type:"JACK_SECRET_VIEW" });
@@ -3039,6 +3127,11 @@ document.getElementById("actions").addEventListener("click", (e)=>{
 
 // setup buttons inside actions area (dynamic)
 document.getElementById("actions").addEventListener("click", (e)=>{
+  const skinBtn = e.target.closest("[data-skin]");
+  if(skinBtn){
+    Actions.setSkin(skinBtn.getAttribute("data-skin"));
+    return;
+  }
   const draw = e.target.closest("#btnDrawId");
   if(draw){
     Actions.jackDrawIdentity();
