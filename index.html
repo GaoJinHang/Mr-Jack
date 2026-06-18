@@ -1328,9 +1328,9 @@ const SKINS = {
     markers: { HOLMES:"H", WATSON:"W", TOBY:"T" }
   },
   bao: {
-    label: "包青天",
+    label: "包拯",
     jack: "真凶",
-    inv: "调查员",
+    inv: "神探",
     suspects: {
       GULL:"沈良", PIZER:"蒙放", SMITH:"常雨", LESTRADE:"卓云", LANE:"崔明冲",
       STEALTHY:"戒贤", GOODLEY:"康乔", MADAME:"丫头", BERT:"秀珠"
@@ -1341,7 +1341,7 @@ const SKINS = {
   di: {
     label: "狄仁杰",
     jack: "真凶",
-    inv: "调查员",
+    inv: "神探",
     suspects: {
       GULL:"金木兰", PIZER:"虎敬晖", SMITH:"许世德", LESTRADE:"太平公主", LANE:"肖清芳",
       STEALTHY:"袁天罡", GOODLEY:"薛青麟", MADAME:"小桃", BERT:"薇儿"
@@ -1351,8 +1351,8 @@ const SKINS = {
   },
   zhen: {
     label: "甄嬛",
-    jack: "真凶",
-    inv: "调查员",
+    jack: "幸免者",
+    inv: "皇帝",
     suspects: {
       GULL:"甄嬛", PIZER:"华妃", SMITH:"沈眉庄", LESTRADE:"祺嫔", LANE:"端妃",
       STEALTHY:"敬妃", GOODLEY:"叶澜依", MADAME:"淳贵人", BERT:"瑛贵人"
@@ -1382,6 +1382,12 @@ function skinJackName(){
 }
 function skinInvName(){
   return activeSkin().inv || "调查员";
+}
+function skinSuspectTerm(){
+  return currentSkinKey==="zhen" ? "存活" : "嫌疑";
+}
+function skinSuspectEntityTerm(){
+  return currentSkinKey==="zhen" ? "存活" : "嫌疑人";
 }
 function skinActorName(who){
   return who===PLAYER.JACK ? skinJackName() : skinInvName();
@@ -1712,7 +1718,7 @@ const Rules = {
 
     const afterSus = Rules.countSuspects(state);
 
-    state.log.push(`${nowStr()} 目击：${skinJackName()} ${jackVisible ? "可见" : "不可见"}；翻掉嫌疑 ${toClear.length} 张（${beforeSus} → ${afterSus}）。`);
+    state.log.push(`${nowStr()} 目击：${skinJackName()} ${jackVisible ? "可见" : "不可见"}；翻掉${skinSuspectTerm()} ${toClear.length} 张（${beforeSus} → ${afterSus}）。`);
     state.log.push(`${nowStr()} 回合 token：${jackVisible ? skinInvName()+"获得" : skinJackName()+"获得(+1公开沙漏)"}。`);
 
     // 胜负判定
@@ -1759,13 +1765,13 @@ const Rules = {
           return { over:true, winner: PLAYER.INV, reason:`同步达成且当回合 ${skinJackName()} 可见：立即抓到` };
         }
         state.raceMode = true;
-        state.log.push(`${nowStr()} 同步达成(嫌疑=1 且 ${skinJackName()}≥6沙漏)：进入追逐模式！直到 ${skinJackName()} 被看到或第8回合结束。`);
+        state.log.push(`${nowStr()} 同步达成(${skinSuspectTerm()}=1 且 ${skinJackName()}≥6沙漏)：进入追逐模式！直到 ${skinJackName()} 被看到或第8回合结束。`);
         return { over:false, raceMode:true };
       }
     }
 
     if(invWin){
-      return { over:true, winner: PLAYER.INV, reason:"只剩 1 名嫌疑人" };
+      return { over:true, winner: PLAYER.INV, reason:`只剩 1 名${skinSuspectEntityTerm()}` };
     }
     if(jackWin){
       return { over:true, winner: PLAYER.JACK, reason:`${skinJackName()} 沙漏 ≥ 6` };
@@ -2141,7 +2147,7 @@ const Actions = {
           }
         }
       }
-      Actions.log(`调查员公开 Alibi：${Render.suspectName(sid)}（沙漏${hg}，公开无加分）→ 若在场则洗清。`);
+      Actions.log(`${skinInvName()}公开 Alibi：${Render.suspectName(sid)}（沙漏${hg}，公开无加分）→ 若在场则洗清。`);
       return;
     }else{
       // Jack 私密：加入隐藏沙漏
@@ -2414,7 +2420,7 @@ const Render = {
     el.innerHTML = `
       <span class="chip"><span class="dot ${dotClass}"></span><b>回合</b>${GameState.turn}/8</span>
       <span class="chip${invActionClass}"><b>${curTxt}</b></span>
-      <span class="chip"><b>嫌疑</b>${suspectsLeft}</span>
+      <span class="chip"><b>${skinSuspectTerm()}</b>${suspectsLeft}</span>
       <span class="chip"><b>公开沙漏</b>${jackPublic}</span>
       <span class="chip"><b>alibi</b>${alibiLeft}</span>
       ${race}
@@ -2804,7 +2810,7 @@ renderActions(){
       ov.innerHTML = `
         <div class="sheet">
           <h2>Alibi（公开）</h2>
-          <p>调查员抽到：<b>${Render.suspectName(o.sid)}</b>（沙漏 ${o.hg}）</p>
+          <p>${skinInvName()}抽到：<b>${Render.suspectName(o.sid)}</b>（沙漏 ${o.hg}）</p>
           <p class="hint">若该角色仍在场则立即洗清（翻为空白面）。</p>
           ${footer([`<button class="primary" id="ovAlibiOk">继续</button>`])}
         </div>
@@ -2851,12 +2857,12 @@ renderActions(){
       ov.innerHTML = `
         <div class="sheet">
           <h2>规则速览（Pocket）</h2>
-          <p><b>回合</b>：最多8回合；每回合=行动阶段(选4次行动) + 目击阶段(翻嫌疑)。</p>
+          <p><b>回合</b>：最多8回合；每回合=行动阶段(选4次行动) + 目击阶段(翻${skinSuspectTerm()})。</p>
           <p><b>奇数回合</b>：随机“掷出”4枚行动token；选择顺序：${skinInvName()} → ${skinJackName()} → ${skinJackName()} → ${skinInvName()}。</p>
           <p><b>偶数回合</b>：4枚token全部翻面；选择顺序：${skinJackName()} → ${skinInvName()} → ${skinInvName()} → ${skinJackName()}。</p>
           <p><b>行动</b>：${Render.detName("HOLMES")}/${Render.detName("WATSON")}/${Render.detName("TOBY")} 移动1或2；Joker(${skinInvName()}必须移动1格，${skinJackName()}可不动)；旋转(90/180，同回合不可旋同一张两次)；交换(不改变朝向)；Alibi(${skinInvName()}公开洗清；${skinJackName()}私密得沙漏)。</p>
-          <p><b>目击</b>：系统按墙阻挡的直线视线判定${skinJackName()}是否可见。可见→翻掉所有“不可见”的嫌疑；不可见→翻掉所有“可见”的嫌疑。可见则回合token给${skinInvName()}；不可见则给${skinJackName()}(+1公开沙漏)。</p>
-          <p><b>胜利</b>：嫌疑只剩1→${skinInvName()}胜；${skinJackName()}总沙漏(公开+隐藏)≥6→${skinJackName()}胜；若同步达成且未到第8回合→追逐模式(直到${skinJackName()}被看到或第8回合结束)。</p>
+          <p><b>目击</b>：系统按墙阻挡的直线视线判定${skinJackName()}是否可见。可见→翻掉所有“不可见”的${skinSuspectTerm()}；不可见→翻掉所有“可见”的${skinSuspectTerm()}。可见则回合token给${skinInvName()}；不可见则给${skinJackName()}(+1公开沙漏)。</p>
+          <p><b>胜利</b>：${skinSuspectTerm()}只剩1→${skinInvName()}胜；${skinJackName()}总沙漏(公开+隐藏)≥6→${skinJackName()}胜；若同步达成且未到第8回合→追逐模式(直到${skinJackName()}被看到或第8回合结束)。</p>
           ${footer([`<button class="primary" id="closeRules">关闭</button>`])}
         </div>
       `;
