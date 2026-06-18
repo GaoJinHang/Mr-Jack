@@ -1162,6 +1162,66 @@ html, body{
   margin-top: auto !important;
 }
 
+
+/* === Skin selector header (minimal diff) === */
+.controlsHeader{
+  grid-template-columns: auto minmax(0, 1fr) !important;
+  align-items: center !important;
+}
+.controlsHeader h3{
+  grid-column: 1 !important;
+  white-space: nowrap !important;
+}
+.skinHeader{
+  grid-column: 2 !important;
+  justify-self: end !important;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  min-width: 0;
+}
+.skinHeader .skinTitle{
+  font-size: 12px;
+  color: rgba(232,238,247,.78);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.controlsBtns{
+  grid-column: 1 / -1 !important;
+}
+.skinPickRow{
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 8px;
+  flex-wrap: nowrap;
+  margin-bottom: 2px;
+}
+.skinPickRow button{
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 6px 6px;
+  min-height: 34px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+@media (max-width: 420px){
+  .skinHeader .skinTitle{
+    font-size: 11px;
+    max-width: 220px;
+  }
+  .skinPickRow{
+    gap: 6px;
+  }
+  .skinPickRow button{
+    font-size: 11px;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1191,6 +1251,7 @@ html, body{
     <div class="controls bottom-area">
       <div class="controlsHeader">
         <h3 id="panelTitle">行动</h3>
+        <div class="skinHeader" id="skinHeader"></div>
         <div class="controlsBtns">
           <button class="primary" id="btnWitness">目击阶段</button>
           <button class="ghost" id="btnEditWalls" style="display:none;">编辑墙(开局)</button>
@@ -1267,7 +1328,7 @@ const SKINS = {
     markers: { HOLMES:"H", WATSON:"W", TOBY:"T" }
   },
   bao: {
-    label: "少年包青天版",
+    label: "包青天",
     jack: "真凶",
     inv: "调查员",
     suspects: {
@@ -1278,7 +1339,7 @@ const SKINS = {
     markers: { HOLMES:"包拯", WATSON:"公孙策", TOBY:"展昭" }
   },
   di: {
-    label: "神探狄仁杰版",
+    label: "狄仁杰",
     jack: "真凶",
     inv: "调查员",
     suspects: {
@@ -1287,6 +1348,17 @@ const SKINS = {
     },
     detectives: { HOLMES:"狄仁杰", WATSON:"曾泰", TOBY:"李元芳" },
     markers: { HOLMES:"狄仁杰", WATSON:"曾泰", TOBY:"李元芳" }
+  },
+  zhen: {
+    label: "甄嬛",
+    jack: "真凶",
+    inv: "调查员",
+    suspects: {
+      GULL:"甄嬛", PIZER:"华妃", SMITH:"沈眉庄", LESTRADE:"祺嫔", LANE:"端妃",
+      STEALTHY:"敬妃", GOODLEY:"叶澜依", MADAME:"淳贵人", BERT:"瑛贵人"
+    },
+    detectives: { HOLMES:"雍正", WATSON:"太后", TOBY:"苏培盛" },
+    markers: { HOLMES:"雍正", WATSON:"太后", TOBY:"苏培盛" }
   }
 };
 let currentSkinKey = "classic";
@@ -2344,7 +2416,7 @@ const Render = {
       <span class="chip${invActionClass}"><b>${curTxt}</b></span>
       <span class="chip"><b>嫌疑</b>${suspectsLeft}</span>
       <span class="chip"><b>公开沙漏</b>${jackPublic}</span>
-      <span class="chip"><b>底牌</b>${alibiLeft}</span>
+      <span class="chip"><b>alibi</b>${alibiLeft}</span>
       ${race}
     `;
 },
@@ -2567,8 +2639,15 @@ renderActionMode(){
 renderActions(){
   const actionsEl = document.getElementById("actions");
   const titleEl = document.getElementById("panelTitle");
+  const skinHeader = document.getElementById("skinHeader");
   const btnWitness = document.getElementById("btnWitness");
   const btnEditWalls = document.getElementById("btnEditWalls");
+
+  if(skinHeader){
+    skinHeader.style.display = "none";
+    skinHeader.innerHTML = "";
+  }
+
   if(btnEditWalls){
     // 禁用/隐藏：不提供“开局编辑墙”入口（保留数据结构与规则逻辑，不删除）
     btnEditWalls.style.display = "none";
@@ -2595,7 +2674,7 @@ renderActions(){
       let btnText = Render.actName(o.act);
       // Jack行动时，ALIBI按钮显示双行提示
       if(o.act === ACT.ALIBI && who === PLAYER.JACK && !disabled){
-        btnText = "抽牌<br><span style='font-size:10px;font-weight:normal;'>请确保调查员不在屏幕</span>";
+        btnText = "抽牌<br><span style='font-size:10px;font-weight:normal;'>请确保${skinInvName()}不在屏幕</span>";
       }
       return `
         <div class="actionBtn ${(disabled)?"used":""}" data-action="${o.tokenId}" ${(disabled)?"style=\"pointer-events:none;\"":""}>
@@ -2618,16 +2697,19 @@ renderActions(){
     btnWitness.disabled = true;
     titleEl.textContent = "开局设置";
     const hasId = !!GameState.jack.identity;
+
+    if(skinHeader && !hasId){
+      skinHeader.style.display = "flex";
+      skinHeader.innerHTML = `<div class="skinTitle">皮肤：${activeSkin().label}（仅身份牌前可切换）</div>`;
+    }
+
     const skinBtns = !hasId ? `
-      <div style="grid-column:1 / -1; display:flex; flex-direction:column; gap:6px; margin-bottom:2px;">
-        <div style="font-size:12px;color:rgba(232,238,247,.78);font-weight:700;">皮肤：${activeSkin().label}（仅抽身份牌前可切换）</div>
-        <div style="display:flex; gap:8px; flex-wrap:nowrap;">
-          ${Object.keys(SKINS).map(k=>`<button class="${k===currentSkinKey?"primary":"ghost"}" data-skin="${k}" style="flex:1; min-width:0;">${SKINS[k].label}</button>`).join("")}
-        </div>
+      <div class="skinPickRow">
+        ${Object.keys(SKINS).map(k=>`<button class="${k===currentSkinKey?"primary":"ghost"}" data-skin="${k}">${SKINS[k].label}</button>`).join("")}
       </div>
     ` : "";
+
     actionsEl.innerHTML = `
-</div>
       ${skinBtns}
       <div style="grid-column:1 / -1; display:flex; gap:10px; flex-wrap:wrap;">
         <button class="primary" id="btnDrawId" style="flex:1;" ${hasId?"disabled":""}>${skinJackName()}抽身份牌<br><span style="font-size:11px;font-weight:normal;">请确保${skinInvName()}不在看屏幕</span></button>
