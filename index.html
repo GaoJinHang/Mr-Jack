@@ -1,0 +1,3533 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>MR Jack Pocket (Web) - Single File</title>
+  <style>
+:root{
+      --bg:#0b0f14;
+      --panel:#111823;
+      --panel2:#0f1620;
+      --card:#141e2b;
+      --card2:#0f1722;
+      --text:#e8eef7;
+      --muted:#a9b6c7;
+      --accent:#4aa3ff;
+      --danger:#ff5c70;
+      --ok:#3ddc97;
+
+      --radius: 14px;
+      --gap: 10px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --wall: 5px;
+      --hair: 1px;
+      --tap: 48px;
+
+      --pagePad: 12px;
+      --panelPad: 10px;
+    }
+
+    *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+    html, body{ height: 100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "PingFang SC","Microsoft YaHei", Arial, sans-serif;
+      background:
+        radial-gradient(1200px 700px at 30% -10%, rgba(74,163,255,.20), transparent 60%),
+        radial-gradient(900px 500px at 110% 0%, rgba(61,220,151,.14), transparent 60%),
+        var(--bg);
+      color:var(--text);
+      min-height:100dvh;
+      height:100dvh;
+      max-width:100vw;
+      overflow:hidden; /* 页面不滚动 */
+      overscroll-behavior: none;
+    }
+
+    /* generic surfaces */
+    .surface{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: var(--hair) solid rgba(255,255,255,.08);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    #app{
+      min-height:100dvh;
+      height:100dvh;
+      max-width:100vw;
+      display:flex;
+      flex-direction:column;
+      gap: var(--gap);
+      padding:
+        calc(env(safe-area-inset-top) + 10px)
+        var(--pagePad)
+        calc(env(safe-area-inset-bottom) + 10px)
+        var(--pagePad);
+    }
+
+    /* ===== Top area ===== */
+    .topbar{
+      display:flex;
+      flex-direction:column;
+      gap: var(--gap);
+      min-height:0;
+    }
+
+    .chipRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      padding:10px 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: var(--hair) solid rgba(255,255,255,.08);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      min-height: 54px;
+    }
+    .chipRow.surface{ }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: var(--hair) solid rgba(255,255,255,.10);
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .chip b{ color: var(--text); font-weight: 700; }
+    .chip .dot{
+      width:8px; height:8px; border-radius:999px; background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(74,163,255,.18);
+    }
+    .chip .dot.ok{ background: var(--ok); box-shadow: 0 0 0 3px rgba(61,220,151,.18); }
+    .chip .dot.bad{ background: var(--danger); box-shadow: 0 0 0 3px rgba(255,92,112,.18); }
+
+    .btnRow{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 8px;
+  min-height:0;
+  overflow-x:hidden; /* 禁止横向滚动 */
+}
+.btnRow > button{
+  flex: 1 1 calc(25% - 8px);
+  min-width: 64px;
+  padding: 8px 8px;
+  min-height: 40px;
+  font-size: 12px;
+  white-space: normal;
+  line-height: 1.15;
+  word-break: break-word;
+}
+
+    button{
+      border:none;
+      color: var(--text);
+      background: rgba(255,255,255,.08);
+      border: var(--hair) solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      padding: 10px 12px;
+      min-height: var(--tap);
+      font-weight: 650;
+      letter-spacing: .2px;
+      box-shadow: var(--shadow);
+      cursor:pointer;
+      width:100%;
+      font-size: 14px;
+    }
+    button:active{ transform: translateY(1px); }
+    button.primary{ background: rgba(74,163,255,.18); border-color: rgba(74,163,255,.30); }
+    button.danger{ background: rgba(255,92,112,.16); border-color: rgba(255,92,112,.28); }
+    button.ghost{ background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.10); box-shadow:none; }
+    button:disabled{ opacity:.45; cursor:not-allowed; }
+
+    /* ===== Main layout ===== */
+    .main{
+      flex: 1;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+      gap: var(--gap);
+    }
+
+    .boardArea{
+      flex: 1;
+      min-height:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 2px;
+    }
+    .gridWrap{
+      height:100%;
+      width:auto;
+  /* max-* removed for board */
+  /* aspect-ratio removed: board sized by JS */
+      display:flex;
+      min-height:0;
+    }
+
+    /* 5x5 grid: outer ring + 3x3 board in the middle */
+    #grid{
+      width:100%;
+      height:100%;
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      gap: clamp(6px, 1.6vmin, 10px);
+      padding: clamp(6px, 1.8vmin, 10px);
+      border-radius: calc(var(--radius) + 6px);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border: var(--hair) solid rgba(255,255,255,.08);
+      box-shadow: var(--shadow);
+      touch-action: manipulation;
+      user-select:none;
+    }
+
+    .ringCell{
+      border-radius: 14px;
+      background: rgba(255,255,255,.05);
+      border: var(--hair) solid rgba(255,255,255,.08);
+      display:grid;                /* 不用 absolute */
+      place-items:center;
+      padding: 6px;
+      font-weight:800;
+      font-size: clamp(12px, 2.1vmin, 16px);
+      color: rgba(232,238,247,.88);
+      min-width:0;
+      min-height:0;
+    }
+    .ringCell .small{
+      font-size: 11px;
+      color: rgba(232,238,247,.72);
+      justify-self:end;
+      align-self:end;
+      font-weight:700;
+    }
+
+    .tile{
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border: var(--hair) solid rgba(255,255,255,.10);
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      justify-content:flex-start;
+      padding: clamp(6px, 2vmin, 10px);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
+      overflow:hidden;
+      cursor:pointer;
+      min-width:0;
+      min-height:0;
+    }
+    .tile.rotPreview{ outline: 3px solid rgba(74,163,255,.65); outline-offset: 2px; }
+    .tile.swapPick1{ outline: 3px solid rgba(74,163,255,.65); outline-offset: 2px; }
+    .tile.swapPick2{ outline: 3px solid rgba(74,163,255,.40); outline-offset: 2px; }
+    .card.card-visible{ background: linear-gradient(180deg, rgba(255,92,112,.15), rgba(255,92,112,.08)); }
+    .tile .name{
+      font-weight: 850;
+      font-size: clamp(11px, 1.9vmin, 13px);
+      line-height: 1.08;
+      text-shadow: 0 1px 0 rgba(0,0,0,.25);
+      max-width: 100%;
+      white-space: normal;
+      word-break: break-word;
+    }
+    .tile.empty{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      color: rgba(232,238,247,.80);
+    }
+
+    /* ===== Action Mode (in-flow, above operation buttons) ===== */
+    .actionMode{
+      display:none;
+      padding: var(--panelPad);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: var(--hair) solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+    }
+    .actionMode .title{
+      font-weight: 900;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: rgba(232,238,247,.95);
+      min-height: 0;
+    }
+    .actionMode .hint{
+      font-size: 12px;
+      color: rgba(232,238,247,.78);
+      line-height: 1.25;
+      min-height: 0;
+    }
+
+    
+
+        /* Action Mode: minimal, no overlap, no horizontal scroll */
+        .actionMode{ overflow-x:hidden; }
+        .actionMode.placeholder{ visibility:hidden; } /* 占位但无内容 */
+        .actionMode .amNote{ opacity:.85; }
+        .actionMode button{
+          padding: 6px 8px;
+          min-height: 38px;
+          font-size: 12px;
+          border-radius: 12px;
+          box-shadow:none;
+        }
+        .actionMode .row{ gap:6px; margin-top: 8px; overflow-x:hidden; min-height:0; }
+        .actionMode .row > button{
+          flex: 1 1 calc(20% - 6px);
+          min-width: 60px; /* 5个按钮一行优先；不足则自动最多两行 */
+          width:auto;
+        }
+        .row{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .row > button{
+      flex: 1 1 calc(50% - 8px);
+      min-width: 120px;
+      box-shadow:none;
+    }
+
+    /* ===== Bottom operation area (in-flow) ===== */
+    .controls{
+      padding: var(--panelPad);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border: var(--hair) solid rgba(255,255,255,.08);
+      box-shadow: var(--shadow);
+
+      display:grid;
+      grid-template-rows: auto auto 1fr;
+      gap: var(--gap);
+      min-height:0;
+      overflow:hidden;
+      height: clamp(280px, 42dvh, 420px);
+
+      /* 给棋盘留空间：底部区域不无限长 */
+    }
+
+    .controlsHeader{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      min-height:0;
+    }
+    .controlsHeader h3{
+      margin:0;
+      font-size: 13px;
+      color: rgba(232,238,247,.92);
+      letter-spacing: .2px;
+    }
+    .controlsBtns{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 8px;
+  overflow-x:hidden; /* 禁止横向滚动 */
+}
+.controlsBtns > button{
+  flex: 1 1 calc(50% - 8px);
+  min-width: 110px;
+  padding: 8px 8px;
+  min-height: 40px;
+  font-size: 12px;
+  white-space: normal;
+  line-height: 1.15;
+  word-break: break-word;
+}
+
+    .actions{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      min-height:0;
+    }
+
+    .actionBtn{
+      background: rgba(255,255,255,.06);
+      border: var(--hair) solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      padding: 10px 10px;
+      min-height: 56px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      align-items:flex-start;
+      justify-content:center;
+      cursor:pointer;
+      user-select:none;
+      min-width:0;
+    }
+    .actionBtn.used{ opacity:.45; }
+    .actionBtn .tag{
+      font-size: 11px;
+      font-weight: 900;
+      color: rgba(232,238,247,.75);
+    }
+    .actionBtn .title{
+      font-weight: 900;
+      font-size: 13px;
+      line-height: 1.1;
+    }
+    .actionBtn .meta{
+      font-size: 11px;
+      color: rgba(232,238,247,.70);
+      font-weight: 650;
+      line-height: 1.2;
+    }
+
+    /* ===== Log (internal scroll only) ===== */
+    .log{
+      min-height: 0;
+      overflow:hidden;
+      padding: 10px;
+      border-radius: var(--radius);
+      background: rgba(0,0,0,.18);
+      border: var(--hair) solid rgba(255,255,255,.10);
+    }
+    .log .line{
+      font-size: 12px;
+      color: rgba(232,238,247,.82);
+      line-height: 1.25;
+      padding: 2px 0;
+    }
+    /* ===== In-flow overlay sheet (no fixed, no cover) ===== */
+    /* ===== Fullscreen overlay (highest layer) ===== */
+.overlay.hidden{ display:none; }
+.overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 9999; /* 必须最高 */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:
+    calc(env(safe-area-inset-top) + 12px)
+    12px
+    calc(env(safe-area-inset-bottom) + 12px)
+    12px;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  overflow:hidden;
+}
+.overlay .sheet{
+  width: min(640px, 100%);
+  max-height: 100%;
+  overflow:hidden;
+  padding: var(--panelPad);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  border: var(--hair) solid rgba(255,255,255,.10);
+  box-shadow: var(--shadow);
+}
+
+.sheet{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      min-height:0;
+    }
+    .sheet h2{
+      margin:0;
+      font-size: 15px;
+      letter-spacing: .2px;
+    }
+    .sheet p{
+      margin:0;
+      font-size: 13px;
+      color: rgba(232,238,247,.86);
+      line-height: 1.35;
+    }
+    .sheet p.hint{
+      font-size: 12px;
+      color: rgba(232,238,247,.72);
+    }
+
+    .footerBtns{
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+    .footerBtns button{ width:auto; }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+    }
+    .item{
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.04);
+      border: var(--hair) solid rgba(255,255,255,.08);
+    }
+    .item .left{ display:flex; flex-direction:column; gap:4px; }
+    .item .left .t{ font-weight: 900; font-size: 13px; }
+    .item .left .d{ font-size: 11px; color: rgba(232,238,247,.70); font-weight: 700; }
+
+    .stepper{ display:flex; gap:8px; align-items:center; }
+    .stepper button{
+      min-height: 40px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      box-shadow:none;
+      width:auto;
+    }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.06);
+      border: var(--hair) solid rgba(255,255,255,.10);
+      color: rgba(232,238,247,.90);
+    }
+
+    .edgeHint{
+      display:flex;
+      gap: 8px;
+      flex-wrap:wrap;
+      font-size: 12px;
+      color: rgba(232,238,247,.76);
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: var(--hair) solid rgba(255,255,255,.10);
+      font-weight: 750;
+    }
+    .pill .sw{
+      width:10px;height:10px;border-radius:999px;background: rgba(255,255,255,.35);
+      border: var(--hair) solid rgba(255,255,255,.25);
+    }
+    .pill .sw.on{ background: rgba(74,163,255,.80); border-color: rgba(74,163,255,.45); }
+
+    
+/* 禁止任何区域横向滚动条（保持可点击） */
+#app, .topbar, .chipRow, .btnRow, .controls, .controlsHeader, .controlsBtns, .actions, .boardArea{
+  overflow-x:hidden;
+}
+
+/* very small phones */
+@media (max-width: 380px){
+      :root{ --gap: 8px; }
+      .btnRow{ grid-template-columns: 1fr 1fr; }
+      button{ font-size: 13px; }
+      .actions{ grid-template-columns: 1fr 1fr; }
+      .row > button{ min-width: 110px; }
+    }
+/* ===== Mobile layout overrides (CSS-only, minimal diff) ===== */
+:root{
+  --topH: clamp(64px, 12dvh, 88px);         /* 顶部信息栏尽量压到 12vh 内 */
+  --bottomH: clamp(220px, 34dvh, 300px);    /* 底部操作区固定高度 */
+}
+
+/* overall spacing tighter (still safe-area aware) */
+#app{
+  gap: 8px;
+  padding:
+    calc(env(safe-area-inset-top) + 6px)
+    var(--pagePad)
+    calc(env(safe-area-inset-bottom) + 6px)
+    var(--pagePad);
+}
+
+/* top info bar compact */
+.topbar{
+  flex: 0 0 var(--topH);
+  height: var(--topH);
+  gap: 6px;
+  min-height: 0;
+}
+.chipRow{
+  padding: 6px 8px;
+  gap: 6px;
+  min-height: 34px;
+  flex-wrap: nowrap;        /* 尽量单行 */
+  overflow: hidden;         /* 不出现滚动条 */
+}
+.chip{
+  padding: 3px 6px;
+  font-size: 10px;
+}
+.chip .dot{ width:6px; height:6px; box-shadow: 0 0 0 2px rgba(74,163,255,.18); }
+
+.btnRow{
+  flex-wrap: nowrap;        /* 顶部按钮尽量一行 */
+  gap: 6px;
+}
+.topbar button{
+  min-height: 32px;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 12px;
+  white-space: nowrap;      /* 避免多行堆叠撑高顶部 */
+}
+
+/* main: board takes the remaining space */
+.main{
+  flex: 1;
+  min-height: 0;
+  gap: 8px;
+  overflow: hidden;         /* 页面不出现竖向滚动 */
+}
+
+/* bottom operation area fixed height */
+.controls{
+  flex: 0 0 var(--bottomH);
+  height: var(--bottomH);
+}
+
+/* board: always a square, almost full width, size not affected by Action Mode */
+.boardArea{
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Override JS inline px sizing removed: board sizing via JS only */
+/* Action Mode: bottom slide layer inside actions area only (never covers board) */
+.actionsWrap{
+  position: relative;
+  overflow: hidden;
+}
+.actionsWrap.hasAM .actions{
+  padding-top: 0 !important; /* 取消预留，不改变整体高度 */
+}
+.actionMode{
+  top: auto !important;
+  bottom: 0;
+  transform: translateY(110%);
+  transition: transform .18s ease, opacity .18s ease;
+  max-height: min(var(--amH), 60%);
+}
+.actionsWrap.hasAM .actionMode{
+  transform: translateY(0);
+}
+.actionMode.placeholder{
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(110%);
+}
+
+/* ===== Mobile UI fixes (021105) - minimal diff (layout/text only) ===== */
+
+/* Page scroll disabled (handled by final 021208 override) */
+/* Top info row: single line, no wrap, compact, alibi visible */
+.chipRow{
+  display:flex;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  gap: 6px;
+  padding: 6px 8px;
+  min-height: 40px;
+}
+.chip{
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 3px 6px;
+  font-size: 10px;
+  white-space: nowrap;
+  justify-content: center;
+  gap: 4px;
+}
+.chip b{ font-size: 10px; }
+.chip .dot{ width:6px; height:6px; box-shadow: 0 0 0 2px rgba(74,163,255,.18); }
+
+/* Top buttons: single line, no wrap, compact */
+.btnRow{
+  display:flex;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+}
+.btnRow > button{
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 4px 8px;
+  min-height: 32px;
+  font-size: 12px;
+  white-space: nowrap;
+  line-height: 1.1;
+}
+
+/* Board: square by width, no internal scrolling */
+.boardArea{
+  padding: 0;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.gridWrap{
+  /* width controlled by JS (window.innerWidth) */
+  /* height controlled by JS (window.innerWidth) */
+  /* aspect-ratio removed: board sized by JS */
+  margin: 0 auto;
+  overflow: hidden;
+}
+#grid{ overflow: hidden; }
+
+/* Action Mode overlays the entire operation area (red box), without affecting board size */
+.controls{ position: relative; }
+.actionMode{
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: block; /* JS still sets display; placeholder hides */
+  overflow: hidden;
+  padding: var(--panelPad);
+  background: linear-gradient(180deg, rgba(11,15,20,.92), rgba(11,15,20,.82));
+  border: var(--hair) solid rgba(255,255,255,.10);
+  box-shadow: var(--shadow);
+}
+.actionMode.placeholder{ display: none !important; }
+.actionMode .row{ overflow: hidden; }
+
+/* ===== Action Mode fix (021107) =====
+   - default hidden: display:none
+   - JS toggles inline display
+   - neutralize old slide/transform/absolute overlay rules that can keep it off-screen
+*/
+.actionMode{
+  display:none;               /* default hidden */
+  position: relative !important;
+  inset: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  transform: none !important;
+  transition: none !important;
+  z-index: 6;                 /* above actions, below fullscreen overlay */
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* If JS sets inline display:block, force it visible even if earlier CSS had !important */
+.actionMode[style*="display: block"],
+.actionMode[style*="display:block"]{
+  display:block !important;
+}
+
+/* placeholder = truly hidden */
+.actionMode.placeholder{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+
+/* Panel layout stability: header -> actionMode -> actions -> log */
+.controls{
+  display:grid;
+  grid-template-rows: auto auto 1fr auto;
+  overflow:hidden;
+  min-height: 0;
+}
+.controlsHeader{ grid-row: 1; }
+.actionMode{ grid-row: 2; }
+.actions{ grid-row: 3; min-height:0; overflow:hidden; }
+.log{
+  grid-row: 4;
+  height: 96px;
+  max-height: 96px;
+  overflow:hidden;
+}
+
+/* ===== Final layout overrides (021108) - minimal diff (layout only) =====
+   Target layout:
+   [Top status]
+   [Square board]
+   [Action area (fixed, no scroll)]
+   [Log (2 lines, scroll)]
+*/
+
+/* Page must NOT scroll */
+html, body{
+  height: 100dvh !important;
+  overflow: hidden !important;
+}
+#app{
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  overflow: hidden !important;
+  gap: 6px !important;
+  padding:
+    calc(env(safe-area-inset-top) + 6px)
+    var(--pagePad)
+    calc(env(safe-area-inset-bottom) + 6px)
+    var(--pagePad) !important;
+}
+
+/* Top bar: compact (single-line chips + single-line buttons) */
+.topbar{
+  gap: 6px !important;
+  flex: 0 0 auto;
+}
+.chipRow{
+  flex-wrap: nowrap !important;
+  justify-content: space-between !important;
+  gap: 4px !important;
+  padding: 4px 6px !important;
+  min-height: 30px !important;
+}
+.chip{
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  padding: 2px 5px !important;
+  font-size: 10px !important;
+  gap: 4px !important;
+  white-space: nowrap !important;
+  justify-content: center !important;
+}
+.chip.inv-action{ background: rgba(255,92,112,.20); }
+.chip b{ font-size: 10px !important; }
+.chip .dot{ width:6px !important; height:6px !important; }
+
+.btnRow{
+  flex-wrap: nowrap !important;
+  gap: 6px !important;
+  overflow: hidden !important;
+}
+.btnRow > button{
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  min-height: 34px !important;
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  white-space: nowrap !important;
+  line-height: 1.1 !important;
+}
+
+/* Main area: no scroll */
+.main{
+  flex: 1 1 auto;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  gap: 6px !important;
+}
+
+/* Board: square, as large as possible, no internal scroll */
+.boardArea{
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  padding: 8px !important;
+  overflow: hidden !important;
+}
+.gridWrap{
+  /* width controlled by JS (window.innerWidth) */
+  /* max-* removed for board */
+  /* max-* removed for board */
+  /* height controlled by JS (window.innerWidth) */
+  /* aspect-ratio removed: board sized by JS */
+  margin: 0 auto !important;
+  overflow: hidden !important;
+}
+#grid{ overflow: hidden !important; }
+
+/* Bottom: fixed action area + fixed log (2 lines) */
+:root{
+  --logH: 44px; /* about 2 lines */
+  --controlsH: clamp(210px, 28dvh, 260px);
+}
+
+.controls{
+  height: var(--controlsH) !important;   /* fixed height => board unaffected */
+  overflow: hidden !important;
+  padding: 8px !important;
+  gap: 6px !important;
+  display: grid !important;
+  grid-template-rows: auto 1fr var(--logH) !important; /* header / action area / log */
+}
+
+/* Action area: must NOT scroll */
+.controlsHeader{ overflow: hidden !important; }
+.actions{
+  overflow: hidden !important; /* no scroll */
+  min-height: 0 !important;
+}
+.actionBtn{
+  min-height: 54px !important;
+  padding: 8px 10px !important;
+}
+
+/* Action Mode stays above actions; JS toggles display; do not let old rules move it off-screen */
+.actionMode{
+  display: none;              /* default hidden */
+  position: relative !important;
+  transform: none !important;
+  transition: none !important;
+  inset: auto !important;
+  z-index: 6;
+}
+.actionMode[style*="display: block"],
+.actionMode[style*="display:block"]{ display:block !important; }
+.actionMode.placeholder{ display:none !important; }
+
+/* Log: 2 lines height, scroll */
+.log{
+  height: var(--logH) !important;
+  max-height: var(--logH) !important;
+  overflow: hidden !important;
+  padding: 6px 8px !important;
+}
+.log .line{
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+  padding: 1px 0 !important;
+}
+
+/* No horizontal scroll anywhere */
+#app, .topbar, .chipRow, .btnRow, .controls, .controlsHeader, .controlsBtns, .actions, .boardArea{
+  overflow-x: hidden !important;
+}
+
+/* === UI fix (021109): remove setup tip card, keep action buttons always visible === */
+
+/* Hide the stage button when disabled so it doesn't steal space (it is only clickable in WITNESS) */
+#btnWitness:disabled{
+  display:none !important;
+}
+
+/* Compact header spacing to free room for action buttons */
+.controlsHeader{
+  gap: 4px !important;
+}
+.controlsHeader h3{
+  font-size: 12px !important;
+  line-height: 1.1 !important;
+}
+
+/* Ensure action row has a minimum height for 2x2 action buttons; log stays fixed */
+.controls{
+  grid-template-rows: auto auto minmax(104px, 1fr) var(--logH) !important;
+}
+
+/* Action buttons tighter so they fit without scrolling/clipping */
+.actions{
+  gap: 6px !important;
+  overflow: visible !important;   /* no scroll, no clipping */
+}
+.actionBtn{
+  min-height: 46px !important;
+  padding: 6px 8px !important;
+  border-radius: 12px !important;
+}
+.actionBtn .title{
+  font-size: 12px !important;
+  line-height: 1.1 !important;
+}
+
+/* SETUP phase <button> in actions area: compact */
+.actions button{
+  min-height: 40px !important;
+  padding: 8px 10px !important;
+  font-size: 14px !important;
+}
+
+/* === UI fix (021110): tighten vertical gaps + Action Mode as subpage (no JS change) === */
+
+/* 1) Reduce visible blank space between top / board / controls */
+#app{ gap: 4px !important; }
+.main{ gap: 4px !important; }
+
+/* Use grid so board takes natural height, remaining height goes to controls (no blank gaps between sections) */
+.main{
+  display: grid !important;
+  grid-template-rows: auto 1fr !important;
+  align-content: start !important;
+}
+
+/* Board area: hug content, keep tiny padding only */
+.boardArea{
+  flex: 0 0 auto !important;
+  padding: 0 !important;
+}
+
+/* Controls: fill the remaining height, keep header/log fixed, give action panel full middle height */
+.controls{
+  height: 100% !important;
+  padding: 6px 8px !important;
+  gap: 4px !important;
+  grid-template-rows: auto 1fr var(--logH) !important;
+}
+
+/* 2) Action Mode becomes an in-panel "subpage": it replaces actions (never both occupy space) */
+.actionPanel{
+  position: relative !important;
+  min-height: 0 !important;
+  overflow: hidden !important; /* no scroll + no overlap into log */
+  flex: 0 0 auto !important;
+}
+
+/* actions fill panel when no actionMode */
+.actionPanel .actions{
+  height: 100% !important;
+}
+
+/* actionMode covers the whole action panel when shown */
+.actionPanel .actionMode{
+  position: absolute !important;
+  inset: 0 !important;          /* cover full actionPanel */
+  z-index: 50 !important;
+  height: 100% !important;
+  max-height: none !important;  /* remove old max-height limit */
+  overflow: hidden !important;  /* no scrollbars; content must fit */
+  transform: none !important;   /* cancel any old slide-away rules */
+  transition: none !important;  /* avoid legacy slide animations */
+  flex-direction: column !important;
+  gap: 6px !important;
+  padding: 8px 8px !important;  /* slightly tighter to fit "取消" fully */
+}
+/* keep primary button row visible at the bottom of the panel */
+.actionPanel .actionMode .row{ margin-top: auto !important; }
+.actionPanel .actionMode .hint{ font-size: 12px !important; line-height: 1.2 !important; }
+.actionPanel .actionMode button{
+  min-height: 36px !important;
+  padding: 6px 8px !important;
+  font-size: 12px !important;
+}
+
+/* When JS turns actionMode on (inline display:block), hide actions entirely */
+.actionPanel .actionMode[style*="display:block"],
+.actionPanel .actionMode[style*="display: block"]{
+  display: flex !important;
+}
+.actionPanel .actionMode[style*="display:block"] ~ .actions,
+.actionPanel .actionMode[style*="display: block"] ~ .actions{
+  display: none !important;
+}
+
+
+/* === 021208 minimal diff: board = window.innerWidth (JS), no scroll anywhere, bottom compresses === */
+html, body{
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+#app.app{
+  height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+
+  /* board must reach screen edges */
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+
+  /* small-height fallback scaling (set by JS only when needed) */
+  transform: scale(var(--uiScale, 1));
+  transform-origin: top center;
+}
+
+/* keep overlay fullscreen even if app is scaled */
+#overlay{
+  transform: scale(var(--uiScaleInv, 1));
+  transform-origin: top left;
+  width: 100vw;
+  height: 100vh;
+}
+
+.topbar{
+  flex: 0 0 auto;
+  margin-left: var(--pagePad);
+  margin-right: var(--pagePad);
+}
+
+.main{
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important; /* allow board to reach screen edges */
+}
+
+/* board-area fixed height set by JS; do NOT shrink board */
+.boardArea.board-area{
+  flex: 0 0 auto !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+/* board is squared by JS; no aspect-ratio/max-height */
+#board.board{
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+  padding: 8px !important; /* make board visually larger */
+  aspect-ratio: unset !important;
+  max-height: none !important;
+  max-width: none !important;
+}
+
+/* neutralize any previous aspect-ratio/max-height */
+.gridWrap{
+  aspect-ratio: unset !important;
+  max-height: none !important;
+  max-width: none !important;
+}
+
+/* bottom-area compresses; never scrolls */
+.controls.bottom-area{
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  margin-left: var(--pagePad);
+  margin-right: var(--pagePad);
+}
+
+.controlsHeader{
+  flex: 0 0 auto !important;
+}
+
+.actionPanel{
+  position: relative !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.actions{
+  height: 100% !important;
+  overflow: hidden !important; /* no internal scroll */
+}
+
+.log{
+  flex: 0 0 44px !important;
+  height: 44px !important;
+  overflow: hidden !important; /* no internal scroll */
+}
+
+/* ActionMode fully covers actionPanel (no scroll, no transform slide) */
+.actionPanel .actionMode{
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  transform: none !important;
+  bottom: auto !important;
+  max-height: none !important;
+  display: none;
+}
+
+/* When JS sets display:block, render as flex so cancel row stays visible */
+.actionPanel .actionMode[style*="display: block"],
+.actionPanel .actionMode[style*="display:block"]{
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* ActionMode replaces actions visually (prevents "cancel" being under buttons) */
+.actionPanel .actionMode[style*="display: block"] ~ .actions,
+.actionPanel .actionMode[style*="display:block"] ~ .actions{
+  visibility: hidden !important;
+}
+
+/* Keep cancel row inside panel */
+.actionMode .row{
+  margin-top: auto !important;
+}
+
+
+/* === Skin selector header (minimal diff) === */
+.controlsHeader{
+  grid-template-columns: auto minmax(0, 1fr) !important;
+  align-items: center !important;
+}
+.controlsHeader h3{
+  grid-column: 1 !important;
+  white-space: nowrap !important;
+}
+.skinHeader{
+  grid-column: 2 !important;
+  justify-self: end !important;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  min-width: 0;
+}
+.skinHeader .skinTitle{
+  font-size: 12px;
+  color: rgba(232,238,247,.78);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.controlsBtns{
+  grid-column: 1 / -1 !important;
+}
+.skinPickRow{
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 8px;
+  flex-wrap: nowrap;
+  margin-bottom: 2px;
+}
+.skinPickRow button{
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 6px 6px;
+  min-height: 34px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+@media (max-width: 420px){
+  .skinHeader .skinTitle{
+    font-size: 11px;
+    max-width: 220px;
+  }
+  .skinPickRow{
+    gap: 6px;
+  }
+  .skinPickRow button{
+    font-size: 11px;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+}
+
+
+/* === 20260715 requested display/background update (layout + skin backgrounds only) === */
+body[data-skin="bao"]{ --skin-bg-image: url("/bg-bao-mobile.png"); }
+body[data-skin="di"]{ --skin-bg-image: url("/bg-di-mobile.png"); }
+body[data-skin="zhen"]{ --skin-bg-image: url("/bg-zhen-mobile.png"); }
+
+body[data-skin="bao"],
+body[data-skin="di"],
+body[data-skin="zhen"]{
+  background:
+    linear-gradient(180deg, rgba(5,9,14,.46), rgba(5,9,14,.70)),
+    var(--skin-bg-image) center center / cover no-repeat,
+    var(--bg);
+}
+
+@media (min-width: 900px){
+  body[data-skin="bao"]{ --skin-bg-image: url("/bg-bao-desktop.png"); }
+  body[data-skin="di"]{ --skin-bg-image: url("/bg-di-desktop.png"); }
+  body[data-skin="zhen"]{ --skin-bg-image: url("/bg-zhen-desktop.png"); }
+
+  #app.app{
+    padding: 16px 18px 18px !important;
+    gap: 12px !important;
+    transform: none !important;
+    transform-origin: initial !important;
+  }
+
+  .topbar{
+    margin: 0 !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+  .chipRow{
+    min-height: 52px !important;
+    padding: 8px 10px !important;
+    gap: 7px !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    align-content: center !important;
+    overflow: hidden !important;
+  }
+  .chip{
+    flex: 0 1 auto !important;
+    padding: 6px 10px !important;
+    gap: 6px !important;
+    font-size: 13px !important;
+  }
+  .chip b{ font-size: 13px !important; }
+  .chip .dot{ width: 8px !important; height: 8px !important; }
+
+  .btnRow{
+    width: clamp(420px, 36vw, 560px);
+    gap: 8px !important;
+    overflow: visible !important;
+  }
+  .btnRow > button{
+    min-width: 96px !important;
+    min-height: 46px !important;
+    padding: 10px 12px !important;
+    border-radius: 14px !important;
+    font-size: 15px !important;
+    line-height: 1.15 !important;
+  }
+
+  .main{
+    flex: 1 1 auto !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) clamp(380px, 30vw, 520px) !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .boardArea.board-area{
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+  }
+  #board.board{
+    padding: 10px !important;
+    border-radius: 22px !important;
+  }
+  #grid{
+    gap: clamp(7px, .7vw, 11px) !important;
+    padding: clamp(7px, .8vw, 12px) !important;
+  }
+  .ringCell{
+    padding: 8px !important;
+    font-size: clamp(14px, 1.1vw, 18px) !important;
+  }
+  .ringCell .small{ font-size: 13px !important; }
+  .tile{
+    padding: clamp(8px, .8vw, 12px) !important;
+  }
+  .tile .name{
+    font-size: clamp(13px, 1vw, 16px) !important;
+    line-height: 1.15 !important;
+  }
+
+  .controls.bottom-area{
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 14px !important;
+    gap: 10px !important;
+    border-radius: 18px !important;
+  }
+  .controlsHeader{
+    gap: 8px !important;
+    overflow: visible !important;
+  }
+  .controlsHeader h3{
+    font-size: 18px !important;
+    line-height: 1.2 !important;
+  }
+  .skinHeader{
+    gap: 10px !important;
+  }
+  .skinHeader .skinTitle{
+    max-width: none !important;
+    font-size: 14px !important;
+  }
+  .controlsBtns{
+    gap: 8px !important;
+    overflow: visible !important;
+  }
+  .controlsBtns > button{
+    min-height: 44px !important;
+    padding: 9px 12px !important;
+    font-size: 15px !important;
+  }
+  .skinPickRow{
+    gap: 8px !important;
+    margin-bottom: 4px !important;
+  }
+  .skinPickRow button{
+    min-height: 44px !important;
+    padding: 9px 8px !important;
+    font-size: 15px !important;
+  }
+
+  .actionPanel{
+    min-height: 0 !important;
+  }
+  .actions{
+    gap: 12px !important;
+    overflow-y: auto !important;
+  }
+  .actions button{
+    min-height: 48px !important;
+    padding: 10px 12px !important;
+    font-size: 15px !important;
+  }
+  .actionBtn{
+    min-height: 88px !important;
+    padding: 14px !important;
+    border-radius: 15px !important;
+  }
+  .actionBtn .tag{ font-size: 13px !important; }
+  .actionBtn .title{
+    font-size: 18px !important;
+    line-height: 1.2 !important;
+  }
+  .actionBtn .meta{ font-size: 13px !important; }
+
+  .actionPanel .actionMode{
+    gap: 10px !important;
+    padding: 14px !important;
+    overflow-y: auto !important;
+  }
+  .actionPanel .actionMode .title{ font-size: 17px !important; }
+  .actionPanel .actionMode .hint{
+    font-size: 15px !important;
+    line-height: 1.4 !important;
+  }
+  .actionPanel .actionMode button{
+    min-height: 44px !important;
+    padding: 9px 12px !important;
+    font-size: 15px !important;
+  }
+
+  .log{
+    flex: 0 0 86px !important;
+    height: 86px !important;
+    max-height: 86px !important;
+    padding: 9px 11px !important;
+    overflow-y: auto !important;
+  }
+  .log .line{
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+    padding: 2px 0 !important;
+  }
+
+  .overlay{
+    padding: 24px !important;
+  }
+  .overlay .sheet{
+    width: min(760px, 100%) !important;
+    max-height: calc(100vh - 48px) !important;
+    padding: 18px !important;
+    overflow-y: auto !important;
+  }
+  .sheet h2{ font-size: 20px !important; }
+  .sheet p{ font-size: 15px !important; }
+  .sheet p.hint{ font-size: 14px !important; }
+  .footerBtns button{
+    min-height: 44px !important;
+    font-size: 15px !important;
+  }
+}
+
+</style>
+</head>
+<body data-skin="classic">
+<div id="app" class="app">
+  <div class="topbar top-info">
+    <div class="chipRow" id="statusRow"></div>
+    <div class="btnRow">
+      <button class="ghost" id="btnRules">规则</button>
+      <button class="ghost" id="btnPassHint">交接(关)</button>
+      <button class="danger" id="btnRestart">重开</button>
+      <button class="ghost" id="btnJackSecret">Jack 私密</button>
+    </div>
+  </div>
+
+  <!-- In-flow overlay: pushes layout, never covers main content -->
+  <div class="overlay hidden" id="overlay"></div>
+
+  <div class="main">
+    <div class="boardArea board-area">
+      <div class="gridWrap board" id="board">
+        <div id="grid"></div>
+      </div>
+    </div>
+
+    
+
+    <div class="controls bottom-area">
+      <div class="controlsHeader">
+        <h3 id="panelTitle">行动</h3>
+        <div class="skinHeader" id="skinHeader"></div>
+        <div class="controlsBtns">
+          <button class="primary" id="btnWitness">目击阶段</button>
+          <button class="ghost" id="btnEditWalls" style="display:none;">编辑墙(开局)</button>
+        </div>
+      </div>
+
+      <div class="actionPanel">
+        <div class="actionMode" id="actionMode"></div>
+        <div class="actions" id="actions"></div>
+      </div>
+
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+/**
+ * =========================
+ * 1) 数据与常量
+ * =========================
+ * - GameState：完整游戏状态（含隐藏信息）
+ * - Rules：纯规则逻辑（不碰 DOM）
+ * - Actions：玩家行为（修改 GameState）
+ * - Render：根据 GameState 刷新 UI
+ */
+
+/** 9 名官方嫌疑人（已移除 Maybrick） */
+const SUSPECTS = [
+  { id:"GULL",      name:"William Gull",      zh:"William Gull",      short:"GULL",      alibiHg:1 },
+  { id:"PIZER",     name:"John Pizer",        zh:"John Pizer",        short:"PIZER",     alibiHg:1 },
+  { id:"SMITH",     name:"John Smith",        zh:"John Smith",        short:"SMITH",     alibiHg:1 },
+  { id:"LESTRADE",  name:"Insp. Lestrade",    zh:"Insp. Lestrade",    short:"LESTR",     alibiHg:0 },
+  { id:"LANE",      name:"Joseph Lane",       zh:"Joseph Lane",       short:"LANE",      alibiHg:1 },
+  { id:"STEALTHY",  name:"Miss Stealthy",     zh:"Miss Stealthy",     short:"MISS",      alibiHg:1 },
+  { id:"GOODLEY",   name:"Sgt. Goodley",      zh:"Sgt. Goodley",      short:"SGT",       alibiHg:0 },
+  { id:"MADAME",    name:"Madame",            zh:"Madame",            short:"MAD",       alibiHg:3 },
+  { id:"BERT",      name:"Jeremy Bert",       zh:"Jeremy Bert",       short:"BERT",      alibiHg:1 },
+];
+
+/** 行动 ID */
+const ACT = {
+  ALIBI:"ALIBI",
+  HOLMES:"HOLMES",
+  WATSON:"WATSON",
+  DOG:"DOG",
+  ROTATE:"ROTATE",
+  EXCHANGE:"EXCHANGE",
+  JOKER:"JOKER"
+};
+
+/** 行动 token 双面配对（4 枚） */
+const ACTION_TOKENS_DEF = [
+  { id:0, sides:[ACT.ALIBI, ACT.HOLMES], side:0 },
+  { id:1, sides:[ACT.DOG,   ACT.WATSON], side:0 },
+  { id:2, sides:[ACT.ROTATE,ACT.EXCHANGE], side:0 },
+  { id:3, sides:[ACT.ROTATE,ACT.JOKER], side:0 },
+];
+
+const PLAYER = { INV:"INV", JACK:"JACK" };
+
+const SKINS = {
+  classic: {
+    label: "经典版",
+    jack: "Jack",
+    inv: "调查员",
+    suspects: {
+      GULL:"William Gull", PIZER:"John Pizer", SMITH:"John Smith", LESTRADE:"Insp. Lestrade", LANE:"Joseph Lane",
+      STEALTHY:"Miss Stealthy", GOODLEY:"Sgt. Goodley", MADAME:"Madame", BERT:"Jeremy Bert"
+    },
+    detectives: { HOLMES:"Holmes", WATSON:"Watson", TOBY:"Toby" },
+    markers: { HOLMES:"H", WATSON:"W", TOBY:"T" }
+  },
+  bao: {
+    label: "包拯",
+    jack: "真凶",
+    inv: "神探",
+    suspects: {
+      GULL:"沈良", PIZER:"蒙放", SMITH:"常雨", LESTRADE:"卓云", LANE:"崔明冲",
+      STEALTHY:"戒贤", GOODLEY:"康乔", MADAME:"丫头", BERT:"秀珠"
+    },
+    detectives: { HOLMES:"包拯", WATSON:"公孙策", TOBY:"展昭" },
+    markers: { HOLMES:"包拯", WATSON:"公孙策", TOBY:"展昭" }
+  },
+  di: {
+    label: "狄仁杰",
+    jack: "真凶",
+    inv: "神探",
+    suspects: {
+      GULL:"金木兰", PIZER:"虎敬晖", SMITH:"许世德", LESTRADE:"太平公主", LANE:"肖清芳",
+      STEALTHY:"袁天罡", GOODLEY:"薛青麟", MADAME:"小桃", BERT:"薇儿"
+    },
+    detectives: { HOLMES:"狄仁杰", WATSON:"曾泰", TOBY:"李元芳" },
+    markers: { HOLMES:"狄仁杰", WATSON:"曾泰", TOBY:"李元芳" }
+  },
+  zhen: {
+    label: "甄嬛",
+    jack: "幸免者",
+    inv: "皇帝",
+    suspects: {
+      GULL:"甄嬛", PIZER:"华妃", SMITH:"沈眉庄", LESTRADE:"祺嫔", LANE:"端妃",
+      STEALTHY:"敬妃", GOODLEY:"叶澜依", MADAME:"淳贵人", BERT:"瑛贵人"
+    },
+    detectives: { HOLMES:"雍正", WATSON:"皇后", TOBY:"苏培盛" },
+    markers: { HOLMES:"雍正", WATSON:"皇后", TOBY:"苏培盛" }
+  }
+};
+let currentSkinKey = "classic";
+function activeSkin(){
+  return SKINS[currentSkinKey] || SKINS.classic;
+}
+function skinSuspectName(sid){
+  const s = activeSkin().suspects[sid];
+  if(s) return s;
+  const base = SUSPECTS.find(x=>x.id===sid);
+  return base ? base.zh : sid;
+}
+function skinDetName(det){
+  return activeSkin().detectives[det] || det;
+}
+function skinDetMark(det){
+  return activeSkin().markers[det] || skinDetName(det);
+}
+function skinJackName(){
+  return activeSkin().jack || "Jack";
+}
+function skinInvName(){
+  return activeSkin().inv || "调查员";
+}
+function skinSuspectTerm(){
+  return currentSkinKey==="zhen" ? "存活" : "嫌疑";
+}
+function skinSuspectEntityTerm(){
+  return currentSkinKey==="zhen" ? "存活" : "嫌疑人";
+}
+function skinActorName(who){
+  return who===PLAYER.JACK ? skinJackName() : skinInvName();
+}
+function canSwitchSkin(){
+  return GameState.phase==="SETUP" && !GameState.jack.identity;
+}
+
+
+/** 外圈 12 格，顺时针索引（0..11） */
+function detDir(pos){
+  if (pos>=0 && pos<=2) return "S";
+  if (pos>=3 && pos<=5) return "W";
+  if (pos>=6 && pos<=8) return "N";
+  return "E";
+}
+
+/** Fisher–Yates 洗牌 */
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function deepClone(obj){ return JSON.parse(JSON.stringify(obj)); }
+
+function nowStr(){
+  const d=new Date();
+  return d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+}
+
+/**
+ * =========================
+ * 2) GameState
+ * =========================
+ */
+function createNewGameState(){
+// ===== Initial setup (street/district tiles) — follow real setup order =====
+// ① Randomize all street tiles positions
+// ② Randomize all street tiles orientations
+// ③ H faces which tile -> rotate its wall to face H
+// ④ W faces which tile -> rotate its wall to face W
+// ⑤ T faces which tile -> rotate its wall to face T
+const tiles = [];
+const suspects = SUSPECTS.map(s=>s.id);
+shuffle(suspects);
+
+// Step ①: create 9 tiles then shuffle to random positions
+const flat = [];
+let tid=1;
+for(let i=0;i<9;i++){
+  // baseWalls: [N,E,S,W] (wall at S when rot=0)
+  const baseWalls=[0,0,1,0];
+  flat.push({
+    uid: tid++,
+    suspectId: suspects[i],
+    faceUp: true,
+    rot: 0,                // Step ② will randomize later
+    baseWalls,
+    barricade: [0,0,0,0],  // extra walls (none by default)
+  });
+}
+shuffle(flat);
+for(let r=0;r<3;r++){
+  const row=[];
+  for(let c=0;c<3;c++){
+    row.push(flat[r*3+c]);
+  }
+  tiles.push(row);
+}
+
+// Step ②: randomize all street tiles orientations (after placement)
+for(let r=0;r<3;r++){
+  for(let c=0;c<3;c++){
+    tiles[r][c].rot = Math.floor(Math.random() * 4); // 0..3
+  }
+}
+
+// Step ③-⑤: orientation correction (random first, then correct; strict facing)
+const INIT_DETECTIVES = { HOLMES:11, WATSON:3, TOBY:7 }; // clockwise numbering shown on UI
+
+function _frontTileCoord(detPos){
+  const dir = detDir(detPos);
+  // dir is the direction the detective faces into the board
+  if(dir==="S") return { r:0, c:detPos,      face:"N" };        // top ring -> tile's N side faces detective
+  if(dir==="W") return { r:detPos-3, c:2,    face:"E" };        // right ring -> tile's E side faces detective
+  if(dir==="N") return { r:2, c:8-detPos,    face:"S" };        // bottom ring -> tile's S side faces detective
+  return           { r:11-detPos, c:0,       face:"W" };        // left ring  -> tile's W side faces detective
+}
+function _edgeIdx(face){ return face==="N"?0 : face==="E"?1 : face==="S"?2 : 3; }
+
+function _rotateWallToFace(detPos){
+  const { r, c, face } = _frontTileCoord(detPos);
+  const tile = tiles[r][c];
+
+  // Identify the "printed wall" in baseWalls (assumed one wall per tile)
+  const baseWallIdx = tile.baseWalls.findIndex(v=>v===1);
+  const bw = (baseWallIdx >= 0) ? baseWallIdx : 2; // fallback to S if missing
+  const target = _edgeIdx(face);
+
+  // Set rot so that the printed wall points exactly to 'target'
+  tile.rot = (target - bw + 4) % 4;
+}
+
+// Required correction order: H -> W -> T
+_rotateWallToFace(INIT_DETECTIVES.HOLMES);
+_rotateWallToFace(INIT_DETECTIVES.WATSON);
+_rotateWallToFace(INIT_DETECTIVES.TOBY);
+  return {
+    phase: "SETUP",
+    isResolvingEndRound: false, // Innocent FIX: end-round resolution lock          // SETUP | ACTION | WITNESS | GAME_OVER
+    turn: 1,                 // 1..8
+    step: 0,                 // 本回合第几次选择行动 (0..3)
+    pickerSeq: [PLAYER.INV, PLAYER.JACK, PLAYER.JACK, PLAYER.INV], // odd default
+    passHint: false,          // 是否弹出交接提示
+    raceMode: false,         // 同时达成 → 追逐模式
+
+    tiles,                   // 3x3
+    detectives: { HOLMES:11, WATSON:3, TOBY:7 }, // 默认：上中/右中/下中（可玩；如你有官方起始位可自行改）
+    tokens: deepClone(ACTION_TOKENS_DEF),
+    remainingTokenIds: [0,1,2,3],
+    chosenTokenIds: [],
+    rotatedThisTurn: [],     // 记录本回合已旋转的 tile.uid（防止同回合旋同一张两次）
+
+    // Alibi：开局 Jack 抽走 1 张作为身份，其余为牌库
+    alibiDeck: [],
+    jack: {
+      identity: null,        // {suspectId, alibiHg}
+      secretCards: [],       // Jack 抽到的 Alibi（隐藏）
+      secretHg: 0,           // Alibi 隐藏沙漏合计（隐藏）
+      publicHg: 0            // 回合 token 获得的沙漏（公开，= Jack 不可见拿 token 次数）
+    },
+    inv: {
+      takenTokens: 0
+    },
+
+    ui: {
+      overlay: null,         // {type, ...}
+      modal: null,           // (deprecated) 保留字段但不再用于行动交互
+      editWalls: false,      // 开局编辑墙
+      selected: null,        // {r,c} 当前选择格（编辑墙用）
+      exchangeFirst: null,   // 旧字段保留
+      actionMode: null,      // {tokenId, by, action, type, ...} 页面内 Action Mode
+      actionHint: null       // 轻提示（短暂显示）
+    },
+
+    log: [`${nowStr()} 准备中：请让 ${skinJackName()} 抽身份后开始。`],
+  };
+}
+
+let GameState = createNewGameState();
+
+/**
+ * =========================
+ * 3) Rules（纯规则逻辑）
+ * =========================
+ */
+const Rules = {
+  currentPlayer(state){
+    return state.pickerSeq[state.step] || null;
+  },
+  tokenAction(token){
+    return token.sides[token.side];
+  },
+  // 奇数：随机掷出；偶数：翻面
+  setupTokensForTurn(state){
+    if(state.turn % 2 === 1){
+      state.tokens.forEach(t => t.side = (Math.random()<0.5?0:1));
+      state.pickerSeq = [PLAYER.INV, PLAYER.JACK, PLAYER.JACK, PLAYER.INV];
+    }else{
+      state.tokens.forEach(t => t.side = 1 - t.side);
+      state.pickerSeq = [PLAYER.JACK, PLAYER.INV, PLAYER.INV, PLAYER.JACK];
+    }
+    state.remainingTokenIds = [0,1,2,3];
+    state.chosenTokenIds = [];
+    state.step = 0;
+    state.rotatedThisTurn = [];
+  },
+  // 计算 tile 当前朝向下的墙（N,E,S,W）
+  rotatedWalls(tile){
+    // baseWalls 相对 rot=0；rot=1 表示顺时针 90
+    const out=[0,0,0,0];
+    for(let i=0;i<4;i++){
+      const idx = (i + tile.rot) % 4;  // base i 被旋到 idx
+      out[idx] = tile.baseWalls[i] ? 1 : 0;
+    }
+    // barricade 同样旋转（在本版本中当作额外墙）
+    const b=[0,0,0,0];
+    for(let i=0;i<4;i++){
+      const idx=(i + tile.rot)%4;
+      b[idx]=tile.barricade[i]?1:0;
+    }
+    return out.map((v,i)=> (v||b[i])?1:0);
+  },
+  // 两格相邻边是否被墙阻挡
+  isBlockedBetween(state, r, c, dir){
+    // dir: "N/E/S/W" from tile (r,c) outward
+    const tile = state.tiles[r][c];
+    const w = Rules.rotatedWalls(tile);
+    const idx = dir==="N"?0:dir==="E"?1:dir==="S"?2:3;
+    if(w[idx]) return true;
+
+    // neighbor side wall
+    const dr = dir==="N"?-1:dir==="S"?1:0;
+    const dc = dir==="W"?-1:dir==="E"?1:0;
+    const nr=r+dr, nc=c+dc;
+    if(nr<0 || nr>2 || nc<0 || nc>2){
+      // 出界视为外侧无墙（侦探在外侧，若 tile 边无墙则可看进来）
+      return false;
+    }
+    const nt = state.tiles[nr][nc];
+    const nw = Rules.rotatedWalls(nt);
+    const opp = dir==="N"?2:dir==="S"?0:dir==="E"?3:1;
+    return !!nw[opp];
+  },
+  // 给定侦探位置，返回他能“直线看见”的 tiles（按顺序）
+  visibleLine(state, detPos){
+    const dir = detDir(detPos);
+    const tiles = [];
+    let coords = [];
+    if(dir==="S"){
+      const c = detPos; // 0..2
+      coords = [[0,c],[1,c],[2,c]];
+    }else if(dir==="N"){
+      const c = 8-detPos; // pos 6..8 -> c 2..0
+      coords = [[2,c],[1,c],[0,c]];
+    }else if(dir==="W"){
+      const r = detPos-3; // 3..5 -> 0..2
+      coords = [[r,2],[r,1],[r,0]];
+    }else{ // E
+      const r = 11-detPos; // 9..11 -> 2..0
+      coords = [[r,0],[r,1],[r,2]];
+    }
+
+    // 从外侧进入第一格，需要检查第一格“面对外侧”的边是否有墙
+    for(let i=0;i<coords.length;i++){
+      const [r,c] = coords[i];
+      // 进入该格的方向（从外往内看，等价于 tile 的外侧边）
+      let enterDir = null;
+      if(dir==="S") enterDir = "N";
+      if(dir==="N") enterDir = "S";
+      if(dir==="W") enterDir = "E";
+      if(dir==="E") enterDir = "W";
+      // 对第一格，检查外侧边墙；对后续格，检查上一格与该格之间的墙
+      let blocked = false;
+      if(i===0){
+        blocked = Rules.isBlockedBetween(state, r, c, enterDir);
+      }else{
+        // 上一格到该格的方向：与视线 dir 相反？（我们 coords 已按视线方向排列）
+        const [pr,pc] = coords[i-1];
+        let stepDir = null;
+        if(pr===r-1 && pc===c) stepDir="S";
+        else if(pr===r+1 && pc===c) stepDir="N";
+        else if(pr===r && pc===c-1) stepDir="E";
+        else if(pr===r && pc===c+1) stepDir="W";
+        blocked = Rules.isBlockedBetween(state, pr, pc, stepDir);
+      }
+      if(blocked) break;
+      tiles.push({r,c});
+    }
+    return tiles;
+  },
+  // 所有侦探可见 tiles 集合
+  computeVisibleTiles(state){
+    const set = new Set();
+    const lines = {};
+    for(const k of ["HOLMES","WATSON","TOBY"]){
+      const pos = state.detectives[k];
+      const line = Rules.visibleLine(state, pos);
+      lines[k]=line;
+      line.forEach(p=> set.add(p.r+","+p.c));
+    }
+    return { set, lines };
+  },
+  // 找到 Jack 身份所在 tile（一定 faceUp）
+  findJackTile(state){
+    if(!state.jack.identity) return null;
+    const sid = state.jack.identity.suspectId;
+    for(let r=0;r<3;r++){
+      for(let c=0;c<3;c++){
+        const t=state.tiles[r][c];
+        if(t.faceUp && t.suspectId===sid) return {r,c};
+      }
+    }
+    // 理论上不会发生
+    return null;
+  },
+  // 目击阶段结算（翻嫌疑 + 分配回合 token + 胜负）
+  applyWitness(state){
+    // Innocent FIX: only resolve during end-round witness
+    if(state.phase!=="WITNESS" || !state.isResolvingEndRound){
+      return { jackVisible:false, result:null };
+    }
+    const vis = Rules.computeVisibleTiles(state);
+    const jackPos = Rules.findJackTile(state);
+    const jackVisible = jackPos ? vis.set.has(jackPos.r+","+jackPos.c) : false;
+
+    const beforeSus = Rules.countSuspects(state);
+
+    // 要翻掉的嫌疑人（不翻 Jack 自己）
+    const toClear = [];
+    for(let r=0;r<3;r++){
+      for(let c=0;c<3;c++){
+        const t=state.tiles[r][c];
+        if(!t.faceUp) continue;
+        if(jackPos && r===jackPos.r && c===jackPos.c) continue;
+
+        const seen = vis.set.has(r+","+c);
+        // Jack 可见：清“不可见”的嫌疑
+        // Jack 不可见：清“可见”的嫌疑
+        if(jackVisible){
+          if(!seen) toClear.push({r,c});
+        }else{
+          if(seen) toClear.push({r,c});
+        }
+      }
+    }
+    toClear.forEach(p => state.tiles[p.r][p.c].faceUp=false);
+
+    // 分配回合 token（公开）
+    if(jackVisible){
+      state.inv.takenTokens += 1;
+    }else{
+      state.jack.publicHg += 1; // 回合 token 反面=1沙漏
+    }
+
+    const afterSus = Rules.countSuspects(state);
+
+    state.log.push(`${nowStr()} 目击：${skinJackName()} ${jackVisible ? "可见" : "不可见"}；翻掉${skinSuspectTerm()} ${toClear.length} 张（${beforeSus} → ${afterSus}）。`);
+    state.log.push(`${nowStr()} 回合 token：${jackVisible ? skinInvName()+"获得" : skinJackName()+"获得(+1公开沙漏)"}。`);
+
+    // 胜负判定
+    const result = Rules.checkWin(state, jackVisible);
+    return { jackVisible, toClear, vis, result };
+  },
+  // 当前剩余嫌疑人数（faceUp true）
+  countSuspects(state){
+    let n=0;
+    for(let r=0;r<3;r++) for(let c=0;c<3;c++) if(state.tiles[r][c].faceUp) n++;
+    return n;
+  },
+  // Jack 总沙漏（隐藏+公开）
+  jackTotalHg(state){
+    return state.jack.publicHg + state.jack.secretHg;
+  },
+  // 同时达成 / 追逐模式
+  checkWin(state, jackVisibleNow){
+    const suspectsLeft = Rules.countSuspects(state);
+    const jackHg = Rules.jackTotalHg(state);
+
+    // 追逐模式：只看“是否被看到”与“是否到第8回合”
+    if(state.raceMode){
+      if(jackVisibleNow){
+        return { over:true, winner: PLAYER.INV, reason:`追逐模式：${skinJackName()} 被看到` };
+      }
+      if(state.turn>=8){
+        return { over:true, winner: PLAYER.JACK, reason:`追逐模式：${skinJackName()} 撑到第8回合仍未被看到` };
+      }
+      return { over:false };
+    }
+
+    const invWin = (suspectsLeft<=1);
+    const jackWin = (jackHg>=6);
+
+    if(invWin && jackWin){
+      // 同时达成
+      if(state.turn>=8){
+        // 第8回合：看当回合目击 Jack 是否可见
+        return { over:true, winner: jackVisibleNow ? PLAYER.INV : PLAYER.JACK, reason:"第8回合同步达成：按可见性裁决" };
+      }else{
+        // 未到第8回合：若此刻已可见，则可视为追逐立刻结束；否则进入追逐模式
+        if(jackVisibleNow){
+          return { over:true, winner: PLAYER.INV, reason:`同步达成且当回合 ${skinJackName()} 可见：立即抓到` };
+        }
+        state.raceMode = true;
+        state.log.push(`${nowStr()} 同步达成(${skinSuspectTerm()}=1 且 ${skinJackName()}≥6沙漏)：进入追逐模式！直到 ${skinJackName()} 被看到或第8回合结束。`);
+        return { over:false, raceMode:true };
+      }
+    }
+
+    if(invWin){
+      return { over:true, winner: PLAYER.INV, reason:`只剩 1 名${skinSuspectEntityTerm()}` };
+    }
+    if(jackWin){
+      return { over:true, winner: PLAYER.JACK, reason:`${skinJackName()} 沙漏 ≥ 6` };
+    }
+
+    // 第8回合结束仍无人达成：默认 Jack 胜（成功逃脱）
+    if(state.turn>=8){
+      return { over:true, winner: PLAYER.JACK, reason:`第8回合结束仍未抓到：${skinJackName()} 逃脱` };
+    }
+    return { over:false };
+  },
+  // 是否允许查看 Jack 私密信息（非随时可点的功能按钮，而是规则允许的“查看行为”）
+  canViewJackSecret(state){
+    if(state.phase==="GAME_OVER") return true;
+    if(state.phase==="SETUP") return !!state.jack.identity; // Jack 抽完身份后
+    if(state.phase==="ACTION"){
+      return Rules.currentPlayer(state)===PLAYER.JACK; // Jack 行动回合
+    }
+    return false;
+  },
+
+  // 校验旋转同回合不重复
+  canRotateTile(state, tileUid){
+    return !state.rotatedThisTurn.includes(tileUid);
+  }
+};
+
+/**
+ * =========================
+ * 4) Actions（修改 GameState）
+ * =========================
+ */
+const Actions = {
+  pushOverlay(obj){ GameState.ui.overlay = obj; Render.render(); },
+  closeOverlay(){ GameState.ui.overlay = null; Render.render(); },
+
+  // （deprecated）旧 modal 字段保留，但不再用于行动交互
+  pushModal(obj){ GameState.ui.modal = obj; Render.render(); },
+  closeModal(){ GameState.ui.modal = null; Render.render(); },
+
+  // 轻提示（不遮挡棋盘）
+  hint(msg){
+    GameState.ui.actionHint = msg;
+    Render.render();
+    setTimeout(()=>{
+      if(GameState.ui.actionHint===msg){
+        GameState.ui.actionHint = null;
+        Render.render();
+      }
+    }, 900);
+  },
+
+  enterActionMode(payload){
+    // payload: {tokenId, by, action, type, ...}
+    GameState.ui.actionMode = payload;
+    Render.render();
+  },
+  exitActionMode(){
+    GameState.ui.actionMode = null;
+    GameState.ui.exchangeFirst = null;
+    GameState.ui.actionMode = null;
+    GameState.ui.actionHint = null;
+    GameState.ui.actionMode = null;
+    GameState.ui.actionHint = null;
+    Render.render();
+  },
+  cancelActionMode(){
+    // 不消耗 token，不改变棋盘，只退出 Action Mode
+    if(GameState.ui.actionMode){
+      Actions.hint("已取消行动（不消耗 token）");
+    }
+    Actions.exitActionMode();
+  },
+
+  // 在行动真正执行时才消耗 token（保证取消不消耗）
+  commitToken(){
+    const am = GameState.ui.actionMode;
+    if(!am) return;
+    const tokenId = am.tokenId;
+    const by = am.by;
+    const action = am.action;
+    if(!GameState.remainingTokenIds.includes(tokenId)) return; // already committed
+
+    GameState.remainingTokenIds = GameState.remainingTokenIds.filter(x=>x!==tokenId);
+    GameState.chosenTokenIds.push(tokenId);
+    Actions.log(`${skinActorName(by)} 选择行动：${Render.actName(action)}（token #${tokenId+1}）`);
+  },
+
+  log(msg){ GameState.log.push(`${nowStr()} ${msg}`); },
+
+  restart(){
+    GameState = createNewGameState();
+    Render.render();
+  },
+
+  setSkin(key){
+    if(!SKINS[key]) return;
+    if(!canSwitchSkin()){
+      Actions.hint("皮肤只能在抽身份牌前切换");
+      return;
+    }
+    currentSkinKey = key;
+    document.body.dataset.skin = key;
+    GameState.log = [`${nowStr()} 准备中：已切换为「${activeSkin().label}」。请让 ${skinJackName()} 抽身份后开始。`];
+    Render.render();
+  },
+
+  // 开局：Jack 抽身份（从9嫌疑 Alibi 中抽走1张）
+  jackDrawIdentity(){
+    if(GameState.phase !== "SETUP") return;
+    const deck = SUSPECTS.map(s => ({ suspectId:s.id, hg: s.alibiHg }));
+    shuffle(deck);
+    const idCard = deck.shift();
+    GameState.jack.identity = { suspectId: idCard.suspectId, alibiHg: idCard.hg };
+    GameState.alibiDeck = deck;
+    GameState.jack.secretCards = [];
+    GameState.jack.secretHg = 0;
+    GameState.jack.publicHg = 0;
+    Actions.log(`${skinJackName()} 已抽取身份牌（已隐藏）。Alibi 牌库剩余 ${GameState.alibiDeck.length} 张。`);
+
+    // 让 Jack 私密查看身份
+    Actions.pushOverlay({
+      type:"JACK_IDENTITY",
+      step: "REVEAL"
+    });
+  },
+
+  // 开始第一回合
+  startGame(){
+    if(!GameState.jack.identity){
+      Actions.pushOverlay({ type:"INFO", title:"还没抽身份", text:`请先让 ${skinJackName()} 点击“抽身份牌”。` });
+      return;
+    }
+    GameState.phase = "ACTION";
+    GameState.turn = 1;
+    Rules.setupTokensForTurn(GameState);
+    GameState.ui.editWalls = false;
+    GameState.ui.selected = null;
+    GameState.ui.exchangeFirst = null;
+    GameState.ui.actionMode = null;
+    GameState.ui.actionHint = null;
+    GameState.ui.actionMode = null;
+    GameState.ui.actionHint = null;
+
+    if(GameState.passHint){
+      Actions.pushOverlay({ type:"PASS", who: Rules.currentPlayer(GameState) });
+    }else{
+      Actions.closeOverlay();
+    }
+    Render.render();
+  },
+
+  // 选择一个行动 token 执行
+  pickAction(tokenId){
+    if(GameState.phase !== "ACTION") return;
+    const cur = Rules.currentPlayer(GameState);
+    if(!cur) return;
+    if(GameState.ui.actionMode) return; // Action Mode 中禁止改选其他 token
+    if(!GameState.remainingTokenIds.includes(tokenId)) return;
+
+    const token = GameState.tokens.find(t=>t.id===tokenId);
+    const action = Rules.tokenAction(token);
+
+    // 进入页面内 Action Mode（不弹窗，不立刻消耗 token）
+    const am = { tokenId, by: cur, action, type:"GENERIC" };
+
+    if(action===ACT.HOLMES || action===ACT.WATSON || action===ACT.DOG){
+      am.type = "MOVE";
+      am.det = action===ACT.HOLMES ? "HOLMES" : action===ACT.WATSON ? "WATSON" : "TOBY";
+    }else if(action===ACT.JOKER){
+      am.type = "JOKER";
+      am.allowSkip = (cur===PLAYER.JACK);
+    }else if(action===ACT.ROTATE){
+      am.type = "ROTATE";
+      // 旋转三阶段：先选牌 -> 选旋转 -> 确认（仅预览，不立即改 GameState.rot）
+      am.target = null;     // {r,c}
+      am.baseRot = null;    // 原始 rot
+      am.previewRot = null; // 预览 rot
+      am.chosenDeg = null;  // 90/180/-90
+    }else if(action===ACT.EXCHANGE){
+      am.type = "SWAP";
+      // 交换：先选两张 -> 预览 -> 确认
+      am.first = null;  // {r,c}
+      am.second = null; // {r,c}
+    }else if(action===ACT.ALIBI){
+      am.type = "ALIBI";
+    }
+
+    Actions.enterActionMode(am);
+  },
+
+  executeAction(by, action){
+    // 已改为 Action Mode：不再弹 modal；此函数保留以兼容旧调用（当前不会被使用）
+    Actions.advanceStep();
+  },
+
+  // 执行移动
+  doMove(det, steps){
+    const curPos = GameState.detectives[det];
+    const newPos = (curPos + steps) % 12;
+    GameState.detectives[det]=newPos;
+    Actions.log(`${Render.detName(det)} 顺时针移动 ${steps} 格（${curPos}→${newPos}）`);
+    Actions.commitToken();
+    Actions.exitActionMode();
+    Actions.advanceStep();
+  },
+
+  // Joker：选择侦探 +（若Jack）可不动
+  doJoker(det, moved){
+    if(moved){
+      Actions.doMove(det, 1);
+    }else{
+      Actions.log(`${skinJackName()} Joker 选择不移动`);
+      Actions.commitToken();
+      Actions.exitActionMode();
+      Actions.advanceStep();
+    }
+  },
+
+  // 旋转：选择 tile + 角度
+  rotatePick(r,c){
+    const tile = GameState.tiles[r][c];
+    if(!Rules.canRotateTile(GameState, tile.uid)){
+      Actions.pushOverlay({ type:"INFO", title:"不合法", text:"同一回合不能旋转同一张区域牌两次。" });
+      return;
+    }
+    Actions.pushModal({
+      type:"ROTATE_DEG",
+      title:`旋转：${Render.tileLabel(tile)}（选择角度）`,
+      r,c
+    });
+  },
+  doRotate(r,c,deg){
+    const tile = GameState.tiles[r][c];
+    const before = tile.rot;
+    if(deg===180) tile.rot = (tile.rot + 2) % 4;
+    else if(deg===90) tile.rot = (tile.rot + 1) % 4;
+    else if(deg===-90) tile.rot = (tile.rot + 3) % 4;
+    GameState.rotatedThisTurn.push(tile.uid);
+    Actions.log(`旋转区域牌 ${Render.tileLabel(tile)}：rot ${before}→${tile.rot}`);
+    Actions.commitToken();
+    Actions.exitActionMode();
+    Actions.advanceStep();
+  },
+
+  // 交换：Action Mode 下依次点击两张街区牌完成交换
+  // 旋转：三阶段（选牌 -> 选旋转 -> 确认）。前两步只做 UI 预览，不写入 GameState.rot
+  rotatePickTile(r,c){
+    const am = GameState.ui.actionMode;
+    if(!am || am.type!=="ROTATE") return;
+    am.target = {r,c};
+    const tile = GameState.tiles[r][c];
+    am.baseRot = tile.rot;
+    am.previewRot = tile.rot;
+    am.chosenDeg = null;
+    Actions.hint("已选择街区牌：请选择旋转角度进行预览");
+    Render.render();
+  },
+  rotatePreview(deg){
+    const am = GameState.ui.actionMode;
+    if(!am || am.type!=="ROTATE") return;
+    if(!am.target){
+      Actions.hint("请先选择一张街区牌");
+      return;
+    }
+    am.chosenDeg = deg;
+    const delta = deg===90 ? 1 : deg===180 ? 2 : 3; // -90 => +3
+    am.previewRot = (am.baseRot + delta) % 4;
+    Render.render();
+  },
+  confirmRotate(){
+    const am = GameState.ui.actionMode;
+    if(!am || am.type!=="ROTATE") return;
+    if(!am.target){
+      Actions.hint("请先选择一张街区牌");
+      return;
+    }
+    if(am.chosenDeg===null){
+      Actions.hint("请先选择旋转角度");
+      return;
+    }
+    const {r,c} = am.target;
+    const tile = GameState.tiles[r][c];
+    // 只在确认时做规则判定
+    if(!Rules.canRotateTile(GameState, tile.uid)){
+      Actions.hint("该街区牌本回合已旋转过（无法确认）");
+      return;
+    }
+    Actions.doRotate(r,c, am.chosenDeg);
+  },
+
+  // 交换：选两张 -> 预览 -> 确认（预览不写入 GameState）
+  exchangePick(r,c){
+    const am = GameState.ui.actionMode;
+    if(!am || am.type!=="SWAP") return;
+
+    if(!am.first){
+      am.first = {r,c};
+      am.second = null;
+      Actions.hint("已选择第1张：请再选第2张进行预览");
+      Render.render();
+      return;
+    }
+    // 已有 first
+    if(!am.second){
+      if(am.first.r===r && am.first.c===c){
+        Actions.hint("请选不同的两张牌");
+        return;
+      }
+      am.second = {r,c};
+      Actions.hint("已进入交换预览：可确认或取消");
+      Render.render();
+      return;
+    }
+    // 已有两张：允许重选第2张（便于快速调整）
+    if(am.first.r===r && am.first.c===c){
+      am.second = null;
+      Actions.hint("已取消第2张选择：请重新选择第2张");
+      Render.render();
+      return;
+    }
+    am.second = {r,c};
+    Actions.hint("已更新交换预览：可确认或取消");
+    Render.render();
+  },
+  confirmSwap(){
+    const am = GameState.ui.actionMode;
+    if(!am || am.type!=="SWAP") return;
+    if(!am.first || !am.second){
+      Actions.hint("请先选择两张街区牌");
+      return;
+    }
+    const a = am.first, b = am.second;
+    if(a.r===b.r && a.c===b.c){
+      Actions.hint("请选不同的两张牌");
+      return;
+    }
+    const t1 = GameState.tiles[a.r][a.c];
+    const t2 = GameState.tiles[b.r][b.c];
+    // 确认时才正式提交交换 + 消耗 token
+    Actions.commitToken();
+    GameState.tiles[a.r][a.c] = t2;
+    GameState.tiles[b.r][b.c] = t1;
+    Actions.log(`交换区域牌：(${a.r+1},${a.c+1}) ↔ (${b.r+1},${b.c+1})（朝向保持不变）`);
+    Actions.exitActionMode();
+    Actions.advanceStep();
+  },
+
+  // Alibi
+  doAlibi(by){
+    Actions.commitToken();
+    Actions.exitActionMode();
+    if(GameState.alibiDeck.length<=0){
+      Actions.log(`Alibi：牌库已空，无效果。`);
+      Actions.advanceStep();
+      return;
+    }
+    const card = GameState.alibiDeck.shift();
+    const sid = card.suspectId;
+    const hg = card.hg;
+
+    if(by===PLAYER.INV){
+      // 公开
+      Actions.pushOverlay({
+        type:"ALIBI_REVEAL_INV",
+        sid, hg
+      });
+      // 翻掉该嫌疑人（若仍在场）
+      for(let r=0;r<3;r++){
+        for(let c=0;c<3;c++){
+          const t=GameState.tiles[r][c];
+          if(t.faceUp && t.suspectId===sid){
+            t.faceUp=false;
+          }
+        }
+      }
+      Actions.log(`${skinInvName()}公开 Alibi：${Render.suspectName(sid)}（沙漏${hg}，公开无加分）→ 若在场则洗清。`);
+      return;
+    }else{
+      // Jack 私密：加入隐藏沙漏
+      GameState.jack.secretCards.push(card);
+      GameState.jack.secretHg += hg;
+      Actions.pushOverlay({
+        type:"ALIBI_REVEAL_JACK",
+        sid, hg
+      });
+      Actions.log(`${skinJackName()} 抽取 Alibi（已隐藏）。`);
+      return;
+    }
+  },
+
+  // 推进到下一次行动 / 或进入目击
+  advanceStep(){
+    // 行动结束时确保退出 Action Mode
+    GameState.ui.actionMode = null;
+    // 行动结束，步数+1
+    GameState.step += 1;
+
+    if(GameState.step>=4){
+      GameState.phase = "WITNESS";
+      Actions.log(`行动阶段结束 → 进入目击阶段。`);
+      Render.render();
+      return;
+    }
+
+    // 交接提示
+    const next = Rules.currentPlayer(GameState);
+    if(GameState.passHint){
+      Actions.pushOverlay({ type:"PASS", who: next });
+    }else{
+      Render.render();
+    }
+  },
+
+  // 目击阶段按钮
+  doWitness(){
+    if(GameState.phase!=="WITNESS") return;
+
+    // Innocent FIX: open end-round resolution lock
+    GameState.isResolvingEndRound = true;
+    const { jackVisible, result } = Rules.applyWitness(GameState);
+    // Innocent FIX: close lock immediately
+    GameState.isResolvingEndRound = false;
+    if(result && result.over){
+      GameState.phase = "GAME_OVER";
+      GameState.ui.overlay = {
+        type:"GAME_OVER",
+        winner: result.winner,
+        reason: result.reason,
+        jackVisible
+      };
+      Actions.log(`游戏结束：${result.winner==="INV"?skinInvName()+"胜":skinJackName()+"胜"}（${result.reason}）`);
+      Render.render();
+      return;
+    }
+
+    // 继续下一回合
+    GameState.turn += 1;
+    GameState.phase = "ACTION";
+    Rules.setupTokensForTurn(GameState);
+
+    if(GameState.passHint){
+      Actions.pushOverlay({ type:"PASS", who: Rules.currentPlayer(GameState) });
+    }else{
+      Render.render();
+    }
+  },
+
+  // 开局编辑墙：点 tile 边开关（写入 tile.baseWalls/barricade）
+  toggleEditWalls(){
+    if(GameState.phase!=="SETUP"){
+      Actions.pushOverlay({ type:"INFO", title:"只能开局编辑", text:"为保证对局公平，编辑墙仅允许在开局 SETUP 阶段。" });
+      return;
+    }
+    GameState.ui.editWalls = !GameState.ui.editWalls;
+    Actions.log(GameState.ui.editWalls ? "进入编辑墙模式：点击区域牌切换选中，再点 N/E/S/W 边按钮开关墙。" : "退出编辑墙模式。");
+    Render.render();
+  },
+
+  // 设置选中 tile
+  selectTile(r,c){
+    GameState.ui.selected = {r,c};
+    Render.render();
+  },
+
+  // 在编辑墙模式下切换某边墙（相对当前朝向）
+  toggleWallOnSelected(edgeIdx, isBarricade){
+    const sel = GameState.ui.selected;
+    if(!sel) return;
+    const tile = GameState.tiles[sel.r][sel.c];
+    // edgeIdx 是相对当前方向 N/E/S/W => 0..3
+    // baseWalls 存的是 rot=0，需把当前边反旋回去
+    const baseIdx = (edgeIdx - tile.rot + 4) % 4;
+    if(isBarricade){
+      tile.barricade[baseIdx] = tile.barricade[baseIdx] ? 0 : 1;
+    }else{
+      tile.baseWalls[baseIdx] = tile.baseWalls[baseIdx] ? 0 : 1;
+    }
+    Render.render();
+  },
+
+  // 允许调 Alibi 沙漏（仅开局）
+  setSuspectHg(sid, delta){
+    if(GameState.phase!=="SETUP") return;
+    const s = SUSPECTS.find(x=>x.id===sid);
+    if(!s) return;
+    s.alibiHg = Math.max(0, s.alibiHg + delta);
+    Actions.log(`调整 ${Render.suspectName(sid)} 的 Alibi 沙漏为 ${s.alibiHg}（仅影响新抽牌）。`);
+    Render.render();
+  }
+};
+
+/**
+ * =========================
+ * 5) Render（DOM 渲染）
+ * =========================
+ */
+
+/**
+ * =========================
+ * UI: 全量同步“可见高亮”（禁止事件驱动）
+ * =========================
+ * 规则：
+ * - 只根据当前状态（含预览状态）计算
+ * - 仅当 faceUp===true 且 isVisible===true 才高亮
+ * - 每次渲染后全量刷新，避免残留旧高亮
+ */
+function syncCardHighlight(){
+  // 1) 基于当前 GameState 生成“用于可见性计算”的预览态（不改游戏逻辑，只做 UI 视图）
+  const st = GameState;
+  const am = st && st.ui ? st.ui.actionMode : null;
+
+  // shallow copy grid; tiles are objects
+  const tiles = st.tiles.map(row => row.slice());
+
+  // ROTATE 预览：用 previewRot 临时替代 rot（不写回原 tile）
+  if(am && am.type==="ROTATE" && am.target && am.previewRot!=null){
+    const {r,c} = am.target;
+    const t = tiles[r][c];
+    tiles[r][c] = Object.assign({}, t, { rot: am.previewRot });
+  }
+
+  // SWAP 预览：临时交换两张牌（不写回原 GameState.tiles）
+  if(am && am.type==="SWAP" && am.first && am.second){
+    const a = am.first, b = am.second;
+    const ta = tiles[a.r][a.c];
+    const tb = tiles[b.r][b.c];
+    tiles[a.r][a.c] = tb;
+    tiles[b.r][b.c] = ta;
+  }
+
+  const previewState = Object.assign({}, st, { tiles });
+
+  // 2) 计算可见集合（按格子坐标）
+  const vis = Rules.computeVisibleTiles(previewState);
+  const visSet = vis && vis.set ? vis.set : new Set();
+
+  // 3) 建立 uid -> card 映射，并写入 card.isVisible（仅 UI 字段）
+  const byId = new Map();
+  for(let r=0;r<3;r++){
+    for(let c=0;c<3;c++){
+      const card = tiles[r][c];
+      if(!card) continue;
+      card.isVisible = (card.faceUp === true) && visSet.has(`${r},${c}`);
+      byId.set(String(card.uid), card);
+
+      // 调试：确认每张牌可见状态
+      console.log(Render.suspectName(card.suspectId), card.isVisible);
+    }
+  }
+
+  // 4) 全量同步 DOM 高亮（禁止 onclick 里加 class）
+  document.querySelectorAll(".card").forEach(cardEl => {
+    const id = cardEl.dataset.id;
+    const card = byId.get(String(id)); // 使用项目真实数据源（由状态推导）
+    if(card && card.isVisible === true){
+      cardEl.classList.add("card-visible");
+    }else{
+      cardEl.classList.remove("card-visible");
+    }
+  });
+}
+
+const Render = {
+  actName(act){
+    switch(act){
+      case ACT.ALIBI: return "抽牌";
+      case ACT.HOLMES: return skinDetName("HOLMES");
+      case ACT.WATSON: return skinDetName("WATSON");
+      case ACT.DOG: return skinDetName("TOBY");
+      case ACT.ROTATE: return "旋转";
+      case ACT.EXCHANGE: return "交换";
+      case ACT.JOKER: return "移动侦探";
+      default: return act;
+    }
+  },
+  suspectName(sid){
+    return skinSuspectName(sid);
+  },
+  detName(det){
+    return skinDetName(det);
+  },
+  jackName(){
+    return skinJackName();
+  },
+  invName(){
+    return skinInvName();
+  },
+  nameTwoLines(name){
+    if(!name) return "";
+    if(name.includes("<br")) return name;
+    const parts = String(name).split(/\s+/).filter(Boolean);
+    if(parts.length<=1) return String(name);
+    // try split near half of total characters (including spaces)
+    const joined = parts.join(" ");
+    const half = Math.floor(joined.length/2);
+    let bestIdx = 0;
+    let bestDist = 1e9;
+    let pos = 0;
+    for(let i=0;i<parts.length-1;i++){
+      pos += parts[i].length;
+      const dist = Math.abs(pos - half);
+      if(dist < bestDist){
+        bestDist = dist;
+        bestIdx = i+1;
+      }
+      pos += 1; // space
+    }
+    const a = parts.slice(0,bestIdx).join(" ");
+    const b = parts.slice(bestIdx).join(" ");
+    return a + "<br>" + b;
+  },
+
+  tileLabel(tile){
+    return tile.faceUp ? Render.suspectName(tile.suspectId) : "Empty";
+  },
+  // 状态条
+  renderStatus(){
+    const el = document.getElementById("statusRow");
+
+    // 顶部按钮区：同步 passHint 按钮文案
+    const btnPassHint = document.getElementById("btnPassHint");
+    if(btnPassHint) btnPassHint.textContent = GameState.passHint ? "交接(开)" : "交接(关)";
+    const cur = Rules.currentPlayer(GameState);
+    // Jack 私密按钮：仅在规则允许时显示/可用
+    const btnSecret = document.getElementById("btnJackSecret");
+    btnSecret.textContent = `${Render.jackName()} 私密`;
+    const allowSecret = (GameState.phase==="ACTION" && Rules.currentPlayer(GameState)===PLAYER.JACK);
+    btnSecret.disabled = !allowSecret;
+    btnSecret.style.display = "";
+    const curTxt = GameState.phase==="ACTION"
+      ? (cur===PLAYER.JACK?`${Render.jackName()}行动`:`${Render.invName()}行动`)
+      : GameState.phase==="WITNESS"
+        ? "目击阶段"
+        : GameState.phase==="SETUP"
+          ? "开局"
+          : "结束";
+
+    const suspectsLeft = Rules.countSuspects(GameState);
+    const jackPublic = GameState.jack.publicHg;
+    const alibiLeft = GameState.alibiDeck.length;
+
+    const dotClass = GameState.phase==="GAME_OVER" ? "bad" : (GameState.phase==="SETUP" ? "ok" : "");
+    const race = GameState.raceMode ? `<span class="chip"><span class="dot bad"></span><b>追逐模式</b></span>` : "";
+    const invActionClass = (GameState.phase==="ACTION" && cur===PLAYER.INV) ? " inv-action" : "";
+
+    el.innerHTML = `
+      <span class="chip"><span class="dot ${dotClass}"></span><b>回合</b>${GameState.turn}/8</span>
+      <span class="chip${invActionClass}"><b>${curTxt}</b></span>
+      <span class="chip"><b>${skinSuspectTerm()}</b>${suspectsLeft}</span>
+      <span class="chip"><b>公开沙漏</b>${jackPublic}</span>
+      <span class="chip"><b>alibi</b>${alibiLeft}</span>
+      ${race}
+    `;
+},
+
+renderActionMode(){
+  const box = document.getElementById("actionMode");
+  const am = GameState.ui.actionMode;
+
+  console.log("render action mode", am);
+
+  // 默认隐藏；有行动时显示（避免 CSS display:none / transform 造成不可见）
+  box.style.display = am ? "block" : "none";
+
+  if(!am){
+    box.classList.add("placeholder");
+    box.innerHTML="";
+    return;
+  }
+  box.classList.remove("placeholder");
+
+  const hintMsg = GameState.ui.actionHint ? `<span class="amNote">（${GameState.ui.actionHint}）</span>` : "";
+  const cancelBtn = `<button class="ghost" id="amCancel">取消</button>`;
+
+  if(am.type==="MOVE"){
+    const detName = Render.detName(am.det);
+    box.innerHTML = `
+      <div class="hint">选择移动 ${detName} 的步数 ${hintMsg}</div>
+      <div class="row">
+        <button class="primary" id="amMv1">1 格</button>
+        <button class="primary" id="amMv2">2 格</button>
+        ${cancelBtn}
+      </div>
+    `;
+    document.getElementById("amMv1").onclick=()=>Actions.doMove(am.det,1);
+    document.getElementById("amMv2").onclick=()=>Actions.doMove(am.det,2);
+    document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
+    return;
+  }
+
+  if(am.type==="JOKER"){
+    const allowSkip = !!am.allowSkip;
+    box.innerHTML = `
+      <div class="hint">选择要移动的侦探（顺时针 1 格）${allowSkip?"，或选择不动":""} ${hintMsg}</div>
+      <div class="row">
+        <button class="primary" id="amJH">${Render.detName("HOLMES")}</button>
+        <button class="primary" id="amJW">${Render.detName("WATSON")}</button>
+        <button class="primary" id="amJT">${Render.detName("TOBY")}</button>
+        ${allowSkip?`<button class="ghost" id="amSkip">不移动</button>`:""}
+        ${cancelBtn}
+      </div>
+    `;
+    document.getElementById("amJH").onclick=()=>Actions.doJoker("HOLMES", true);
+    document.getElementById("amJW").onclick=()=>Actions.doJoker("WATSON", true);
+    document.getElementById("amJT").onclick=()=>Actions.doJoker("TOBY", true);
+    if(allowSkip) document.getElementById("amSkip").onclick=()=>Actions.doJoker("HOLMES", false);
+    document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
+    return;
+  }
+
+  if(am.type==="ROTATE"){
+    const picked = am.target ? `已选：(${am.target.r+1},${am.target.c+1})` : "请先点棋盘选一张牌";
+    const disableAngle = !am.target;
+    const canConfirm = !!am.target && am.chosenDeg!==null;
+    const disAttr = disableAngle ? 'style="pointer-events:none; opacity:.55;"' : '';
+    const confirmBtn = `<button class="${canConfirm?"primary":"ghost"}" id="amConfirm" ${canConfirm?"":'style="pointer-events:none; opacity:.55;"'}>确认</button>`;
+    box.innerHTML = `
+      <div class="hint">选择一张牌进行旋转</div>
+      <div class="hint" style="margin-top:6px;">${picked}</div>
+      <div class="row">
+        <button class="${am.chosenDeg===90?"primary":"ghost"}" id="amR90" ${disAttr}>↻90°</button>
+        <button class="${am.chosenDeg===180?"primary":"ghost"}" id="amR180" ${disAttr}>180°</button>
+        <button class="${am.chosenDeg===-90?"primary":"ghost"}" id="amR_90" ${disAttr}>↺90°</button>
+        ${confirmBtn}
+        ${cancelBtn}
+      </div>
+    `;
+    document.getElementById("amR90").onclick=()=>Actions.rotatePreview(90);
+    document.getElementById("amR180").onclick=()=>Actions.rotatePreview(180);
+    document.getElementById("amR_90").onclick=()=>Actions.rotatePreview(-90);
+    document.getElementById("amConfirm").onclick=()=>Actions.confirmRotate();
+    document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
+    return;
+  }
+
+  if(am.type==="SWAP"){
+    const picked1 = am.first ? `第1张：(${am.first.r+1},${am.first.c+1})` : "第1张：未选";
+    const picked2 = am.second ? `第2张：(${am.second.r+1},${am.second.c+1})` : "第2张：未选";
+    const hint = !am.first ? "选择两张牌交换位置" : (!am.second ? "选择第二张牌" : "确认交换");
+    const canConfirm = !!am.first && !!am.second;
+    const confirmBtn = `<button class="${canConfirm?"primary":"ghost"}" id="amConfirm" ${canConfirm?"":'style="pointer-events:none; opacity:.55;"'}>确认</button>`;
+    box.innerHTML = `
+      <div class="hint">${hint}</div>
+      <div class="hint" style="margin-top:6px;">${picked1}　${picked2}</div>
+      <div class="row">
+        ${confirmBtn}
+        ${cancelBtn}
+      </div>
+    `;
+    document.getElementById("amConfirm").onclick=()=>Actions.confirmSwap();
+    document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
+    return;
+  }
+
+  if(am.type==="ALIBI"){
+    box.innerHTML = `
+      <div class="hint">抽一张牌并结算 ${hintMsg}</div>
+      <div class="row">
+        <button class="primary" id="amDoAlibi">抽牌</button>
+        ${cancelBtn}
+      </div>
+    `;
+    document.getElementById("amDoAlibi").onclick=()=>Actions.doAlibi(am.by);
+    document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
+    return;
+  }
+
+  // fallback
+  box.innerHTML = `
+    <div class="hint">${GameState.ui.actionHint || "进行中"} </div>
+    <div class="row">${cancelBtn}</div>
+  `;
+  document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
+},
+
+  // 5x5 网格：外圈+3x3 tile
+  renderGrid(){
+    const grid = document.getElementById("grid");
+    const cells = [];
+    // 5x5 index helper
+    function pushCell(html, cls, data=""){
+      cells.push(`<div class="${cls}" ${data}>${html}</div>`);
+    }
+
+    // map ring positions to 5x5 coords
+    // top ring: (0,1)(0,2)(0,3) => pos 0,1,2
+    // right ring: (1,4)(2,4)(3,4) => pos 3,4,5
+    // bottom ring: (4,3)(4,2)(4,1) => pos 6,7,8
+    // left ring: (3,0)(2,0)(1,0) => pos 9,10,11
+    const ringAt = {};
+    ringAt["0,1"]=0; ringAt["0,2"]=1; ringAt["0,3"]=2;
+    ringAt["1,4"]=3; ringAt["2,4"]=4; ringAt["3,4"]=5;
+    ringAt["4,3"]=6; ringAt["4,2"]=7; ringAt["4,1"]=8;
+    ringAt["3,0"]=9; ringAt["2,0"]=10; ringAt["1,0"]=11;
+
+    // detective markers on ring positions. If multiple, show with "/".
+    const detMark = {};
+    for(const det of ["HOLMES","WATSON","TOBY"]){
+      const pos = GameState.detectives[det];
+      detMark[pos] = detMark[pos] || [];
+      detMark[pos].push(skinDetMark(det));
+    }
+    function fmtMarks(m){
+      if(!m) return "";
+      return m.join("/");
+    }
+
+    // 街区牌渲染规则：只显示「名字(仅 faceUp=true)」与「墙」。不显示 rot/可见性/排除标记等。
+
+    // build 5x5
+    let idx=0;
+    for(let gr=0;gr<5;gr++){
+      for(let gc=0;gc<5;gc++){
+        // center 3x3: tiles at (1..3,1..3)
+        if(gr>=1 && gr<=3 && gc>=1 && gc<=3){
+          const r=gr-1, c=gc-1;
+          const am = GameState.ui.actionMode;
+          const tile = GameState.tiles[r][c];
+
+          // UI 预览：交换预览（仅渲染层互换，不写入 GameState）
+          let dispTile = tile;
+          if(am && am.type==="SWAP" && am.first && am.second){
+            if(am.first.r===r && am.first.c===c) dispTile = GameState.tiles[am.second.r][am.second.c];
+            else if(am.second.r===r && am.second.c===c) dispTile = GameState.tiles[am.first.r][am.first.c];
+          }
+
+          // UI 预览：旋转预览（仅渲染层使用 previewRot，不写入 GameState）
+          let effRot = dispTile.rot;
+          if(am && am.type==="ROTATE" && am.target && am.target.r===r && am.target.c===c && am.previewRot!==null){
+            effRot = am.previewRot;
+          }
+
+          const walls = Rules.rotatedWalls({ ...dispTile, rot: effRot });
+
+          const bTop = walls[0] ? `border-top: var(--wall) solid rgba(232,238,247,.85);` : `border-top: var(--hair) solid rgba(255,255,255,.10);`;
+          const bRight= walls[1] ? `border-right: var(--wall) solid rgba(232,238,247,.85);` : `border-right: var(--hair) solid rgba(255,255,255,.10);`;
+          const bBot  = walls[2] ? `border-bottom: var(--wall) solid rgba(232,238,247,.85);` : `border-bottom: var(--hair) solid rgba(255,255,255,.10);`;
+          const bLeft = walls[3] ? `border-left: var(--wall) solid rgba(232,238,247,.85);` : `border-left: var(--hair) solid rgba(255,255,255,.10);`;
+
+          const nm = dispTile.faceUp ? Render.nameTwoLines(Render.suspectName(dispTile.suspectId)) : "";
+          let cls = "tile card";
+          // highlight is synced from state via syncCardHighlight()
+          if(am && am.type==="ROTATE" && am.target && am.target.r===r && am.target.c===c) cls += " rotPreview";
+          if(am && am.type==="SWAP"){
+            if(am.first && am.first.r===r && am.first.c===c) cls += " swapPick1";
+            if(am.second && am.second.r===r && am.second.c===c) cls += " swapPick2";
+          }
+          pushCell(`
+            <div class="name">${nm}</div>
+          `, cls, `data-id="${dispTile.uid}" data-tile="${r},${c}" style="${bTop}${bRight}${bBot}${bLeft}"`);
+        }else{
+          // ring or empty
+          const key = gr+","+gc;
+          if(ringAt[key]!==undefined){
+            const pos = ringAt[key];
+            const letters = fmtMarks(detMark[pos]);
+            pushCell(`
+              ${letters || ""}
+              <div class="small">${pos}</div>
+            `, "ringCell", `data-ring="${pos}"`);
+          }else{
+            pushCell("", "ringCell", `style="opacity:.0; pointer-events:none;"`);
+          }
+        }
+        idx++;
+      }
+    }
+    grid.innerHTML = cells.join("");
+  },
+
+renderActions(){
+  const actionsEl = document.getElementById("actions");
+  const titleEl = document.getElementById("panelTitle");
+  const skinHeader = document.getElementById("skinHeader");
+  const btnWitness = document.getElementById("btnWitness");
+  const btnEditWalls = document.getElementById("btnEditWalls");
+
+  if(skinHeader){
+    skinHeader.style.display = "none";
+    skinHeader.innerHTML = "";
+  }
+
+  if(btnEditWalls){
+    // 禁用/隐藏：不提供“开局编辑墙”入口（保留数据结构与规则逻辑，不删除）
+    btnEditWalls.style.display = "none";
+    btnEditWalls.disabled = true;
+  }
+
+  // 阶段按钮文案（更短）
+  if(btnWitness) btnWitness.textContent = "目击阶段";
+
+  if(GameState.phase==="ACTION"){
+    const who = Rules.currentPlayer(GameState);
+    titleEl.textContent = `行动 ${GameState.step+1}/4 · ${skinActorName(who)}`;
+    btnWitness.disabled = true;
+
+    const opts = GameState.tokens.map(t=>{
+      const act = Rules.tokenAction(t);
+      return { tokenId: t.id, act };
+    });
+    const locked = !!GameState.ui.actionMode;
+
+    const html = opts.map(o=>{
+      const used = !GameState.remainingTokenIds.includes(o.tokenId);
+      const disabled = used || locked;
+      let btnText = Render.actName(o.act);
+      // Jack行动时，ALIBI按钮显示双行提示
+      if(o.act === ACT.ALIBI && who === PLAYER.JACK && !disabled){
+        btnText = "抽牌<br><span style='font-size:10px;font-weight:normal;'>请确保${skinInvName()}不在屏幕</span>";
+      }
+      return `
+        <div class="actionBtn ${(disabled)?"used":""}" data-action="${o.tokenId}" ${(disabled)?"style=\"pointer-events:none;\"":""}>
+          <div class="title">${btnText}</div>
+        </div>
+      `;
+    }).join("");
+    actionsEl.innerHTML = html;
+    return;
+  }
+
+  if(GameState.phase==="WITNESS"){
+    titleEl.textContent = "目击阶段";
+    btnWitness.disabled = false;
+    actionsEl.innerHTML = "";
+    return;
+  }
+
+  if(GameState.phase==="SETUP"){
+    btnWitness.disabled = true;
+    titleEl.textContent = "开局设置";
+    const hasId = !!GameState.jack.identity;
+
+    if(skinHeader && !hasId){
+      skinHeader.style.display = "flex";
+      skinHeader.innerHTML = `<div class="skinTitle">皮肤：${activeSkin().label}（仅身份牌前可切换）</div>`;
+    }
+
+    const skinBtns = !hasId ? `
+      <div class="skinPickRow">
+        ${Object.keys(SKINS).map(k=>`<button class="${k===currentSkinKey?"primary":"ghost"}" data-skin="${k}">${SKINS[k].label}</button>`).join("")}
+      </div>
+    ` : "";
+
+    actionsEl.innerHTML = `
+      ${skinBtns}
+      <div style="grid-column:1 / -1; display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="primary" id="btnDrawId" style="flex:1;" ${hasId?"disabled":""}>${skinJackName()}抽身份牌<br><span style="font-size:11px;font-weight:normal;">请确保${skinInvName()}不在看屏幕</span></button>
+        <button class="primary" id="btnStart" style="flex:1;" ${hasId?"":"disabled"}>开始第1回合</button>
+      </div>
+    `;
+    return;
+  }
+
+  // GAME_OVER
+  btnWitness.disabled = true;
+  titleEl.textContent = "游戏结束";
+  actionsEl.innerHTML = `
+    <div class="actionBtn" style="grid-column: 1 / -1;">
+      <div class="title">点击右上角“重开”开始新局</div>
+      <div class="meta">或点击“${skinJackName()} 私密”查看身份与隐藏Alibi。</div>
+    </div>
+  `;
+},
+
+  renderLog(){
+    const el=document.getElementById("log");
+    // 默认显示容器高度内的最新日志；允许滚动查看历史（不删除旧数据）
+    const stickBottom = (el.scrollHeight - el.scrollTop - el.clientHeight) < 20;
+    const lines = GameState.log.map(s=>`<div class="line">${s}</div>`).join("");
+    el.innerHTML = lines;
+    if(stickBottom) el.scrollTop = el.scrollHeight;
+  },
+
+  renderOverlay(){
+    const ov = document.getElementById("overlay");
+    const o = GameState.ui.overlay;
+    if(!o){
+      ov.classList.add("hidden");
+      ov.innerHTML="";
+      return;
+    }
+    ov.classList.remove("hidden");
+
+    // helpers
+    const footer = (btns)=> `<div class="footerBtns">${btns.join("")}</div>`;
+
+    if(o.type==="PASS"){
+      const who = o.who==="INV" ? skinInvName() : skinJackName();
+      ov.innerHTML = `
+        <div class="sheet">
+          <h2>交接手机</h2>
+          <p>请把手机交给 <b>${who}</b>，然后点击继续。</p>
+          ${footer([
+            `<button class="primary" id="ovContinue">继续</button>`
+          ])}
+          <p class="hint">（可在右上角按钮区关闭/开启交接提示。）</p>
+        </div>
+      `;
+      document.getElementById("ovContinue").onclick = ()=> Actions.closeOverlay();
+      return;
+    }
+
+    if(o.type==="INFO"){
+      ov.innerHTML = `
+        <div class="sheet">
+          <h2>${o.title||"提示"}</h2>
+          <p>${o.text||""}</p>
+          ${footer([`<button class="primary" id="ovOk">知道了</button>`])}
+        </div>
+      `;
+      document.getElementById("ovOk").onclick = ()=> Actions.closeOverlay();
+      return;
+    }
+
+    if(o.type==="JACK_IDENTITY"){
+      const sid = GameState.jack.identity?.suspectId;
+      const name = sid ? Render.suspectName(sid) : "（未知）";
+      ov.innerHTML = `
+        <div class="sheet">
+          <h2>${skinJackName()} 私密：你的身份是</h2>
+          <p style="font-size:14px;"><b>${name}</b></p>
+          <p class="hint">请确保${skinInvName()}不在看屏幕。确认后将进入游戏。</p>
+          ${footer([
+            `<button class="primary" id="ovIdOk">我已记住</button>`
+          ])}
+        </div>
+      `;
+      document.getElementById("ovIdOk").onclick = ()=>{
+        Actions.closeOverlay();
+        Render.render();
+      };
+      return;
+    }
+
+    if(o.type==="ALIBI_REVEAL_INV"){
+      ov.innerHTML = `
+        <div class="sheet">
+          <h2>Alibi（公开）</h2>
+          <p>${skinInvName()}抽到：<b>${Render.suspectName(o.sid)}</b>（沙漏 ${o.hg}）</p>
+          <p class="hint">若该角色仍在场则立即洗清（翻为空白面）。</p>
+          ${footer([`<button class="primary" id="ovAlibiOk">继续</button>`])}
+        </div>
+      `;
+      document.getElementById("ovAlibiOk").onclick = ()=>{
+        Actions.closeOverlay();
+        Actions.advanceStep();
+      };
+      return;
+    }
+
+    if(o.type==="ALIBI_REVEAL_JACK"){
+      const total = Rules.jackTotalHg(GameState);
+      ov.innerHTML = `
+        <div class="sheet">
+          <h2>${skinJackName()} 私密：Alibi</h2>
+          <p>你抽到：<b>${Render.suspectName(o.sid)}</b>（隐藏沙漏 +${o.hg}）</p>
+          <p class="hint">你的总沙漏（含公开+隐藏）现在是：<b>${total}</b>。请勿让${skinInvName()}看到。</p>
+          ${footer([`<button class="primary" id="ovAlibiJackOk">我已看完</button>`])}
+        </div>
+      `;
+      document.getElementById("ovAlibiJackOk").onclick = ()=>{
+        Actions.closeOverlay();
+        Actions.advanceStep();
+      };
+      return;
+    }
+
+    if(o.type==="GAME_OVER"){
+      const who = o.winner==="INV" ? `${skinInvName()}胜利` : `${skinJackName()} 胜利`;
+      ov.innerHTML = `
+        <div class="sheet">
+          <h2>${who}</h2>
+          <p>${o.reason || ""}</p>
+          <p class="hint">你可以点“${skinJackName()} 私密”查看身份与隐藏 Alibi；或点右上角“重开”。</p>
+          ${footer([`<button class="primary" id="ovEndOk">关闭</button>`])}
+        </div>
+      `;
+      document.getElementById("ovEndOk").onclick = ()=> Actions.closeOverlay();
+      return;
+    }
+
+    if(o.type==="RULES"){
+      ov.innerHTML = `
+        <div class="sheet">
+          <h2>规则速览（Pocket）</h2>
+          <p><b>回合</b>：最多8回合；每回合=行动阶段(选4次行动) + 目击阶段(翻${skinSuspectTerm()})。</p>
+          <p><b>奇数回合</b>：随机“掷出”4枚行动token；选择顺序：${skinInvName()} → ${skinJackName()} → ${skinJackName()} → ${skinInvName()}。</p>
+          <p><b>偶数回合</b>：4枚token全部翻面；选择顺序：${skinJackName()} → ${skinInvName()} → ${skinInvName()} → ${skinJackName()}。</p>
+          <p><b>行动</b>：${Render.detName("HOLMES")}/${Render.detName("WATSON")}/${Render.detName("TOBY")} 移动1或2；Joker(${skinInvName()}必须移动1格，${skinJackName()}可不动)；旋转(90/180，同回合不可旋同一张两次)；交换(不改变朝向)；Alibi(${skinInvName()}公开洗清；${skinJackName()}私密得沙漏)。</p>
+          <p><b>目击</b>：系统按墙阻挡的直线视线判定${skinJackName()}是否可见。可见→翻掉所有“不可见”的${skinSuspectTerm()}；不可见→翻掉所有“可见”的${skinSuspectTerm()}。可见则回合token给${skinInvName()}；不可见则给${skinJackName()}(+1公开沙漏)。</p>
+          <p><b>胜利</b>：${skinSuspectTerm()}只剩1→${skinInvName()}胜；${skinJackName()}总沙漏(公开+隐藏)≥6→${skinJackName()}胜；若同步达成且未到第8回合→追逐模式(直到${skinJackName()}被看到或第8回合结束)。</p>
+          ${footer([`<button class="primary" id="closeRules">关闭</button>`])}
+        </div>
+      `;
+      document.getElementById("closeRules").onclick = ()=> Actions.closeOverlay();
+      return;
+    }
+
+    if(o.type==="JACK_SECRET_VIEW"){
+      const idSid = GameState.jack.identity?.suspectId;
+      const idName = idSid ? Render.suspectName(idSid) : "未抽";
+      const total = Rules.jackTotalHg(GameState);
+      const cards = GameState.jack.secretCards.map(c=>`<div class="item"><div class="left"><div class="t">${Render.suspectName(c.suspectId)}</div><div class="d">隐藏沙漏 +${c.hg}</div></div></div>`).join("");
+      ov.innerHTML = `
+        <div class="sheet">
+          <h2>${skinJackName()} 私密信息</h2>
+          <p><b>身份：</b>${idName}</p>
+          <p><b>公开沙漏：</b>${GameState.jack.publicHg}　<b>隐藏沙漏：</b>${GameState.jack.secretHg}　<b>总计：</b>${total}</p>
+          <p class="hint">以下 Alibi 仅 ${skinJackName()} 可见：</p>
+          <div class="list">
+            ${cards || `<div class="item"><div class="left"><div class="t">暂无</div><div class="d">还没有抽到隐藏 Alibi。</div></div></div>`}
+          </div>
+          ${footer([`<button class="primary" id="closeSecret">关闭</button>`])}
+        </div>
+      `;
+      document.getElementById("closeSecret").onclick = ()=> Actions.closeOverlay();
+      return;
+    }
+
+    if(o.type==="ALIBI_HG_EDIT"){
+      const rows = SUSPECTS.map(s=>{
+        return `
+          <div class="item">
+            <div class="left">
+              <div class="t">${s.zh}</div>
+              <div class="d">Alibi 沙漏：${s.alibiHg}</div>
+            </div>
+            <div class="stepper">
+              <button class="ghost" data-hg="${s.id},-1">-</button>
+              <button class="ghost" data-hg="${s.id},+1">+</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+      ov.innerHTML = `
+        <div class="sheet">
+          <h2>调整 Alibi 沙漏（开局）</h2>
+          <p class="hint">你图里的沙漏分布如果与默认不同，可在此调整。仅影响“之后抽到的牌”。</p>
+          <div class="list">${rows}</div>
+          ${footer([`<button class="primary" id="closeHg">完成</button>`])}
+        </div>
+      `;
+      ov.querySelectorAll("[data-hg]").forEach(btn=>{
+        btn.onclick = ()=>{
+          const [sid, d] = btn.getAttribute("data-hg").split(",");
+          Actions.setSuspectHg(sid, parseInt(d,10));
+        };
+      });
+      document.getElementById("closeHg").onclick = ()=> Actions.closeOverlay();
+      return;
+    }
+
+    // default fallback
+    ov.innerHTML = `
+      <div class="sheet">
+        <h2>未知弹窗</h2>
+        <p>type=${o.type}</p>
+        ${footer([`<button class="primary" id="ovClose">关闭</button>`])}
+      </div>
+    `;
+    document.getElementById("ovClose").onclick = ()=> Actions.closeOverlay();
+  },
+
+  renderModal(){
+    const o = GameState.ui.modal;
+    // 模态用 overlay 的 sheet 简化（同层逻辑）
+    if(!o) return;
+
+    const ov = document.getElementById("overlay");
+    ov.classList.remove("hidden");
+
+    const footer = (btns)=> `<div class="footerBtns">${btns.join("")}</div>`;
+
+    if(o.type==="MOVE"){
+      ov.innerHTML = `
+        <div class="sheet">
+          <h2>${o.title}</h2>
+          <p class="hint">选择移动步数（顺时针）。</p>
+          ${footer([
+            `<button class="primary" id="mv1">移动 1</button>`,
+            `<button class="primary" id="mv2">移动 2</button>`,
+            `<button class="ghost" id="cancel">取消</button>`
+          ])}
+        </div>
+      `;
+      document.getElementById("mv1").onclick=()=>Actions.doMove(o.det,1);
+      document.getElementById("mv2").onclick=()=>Actions.doMove(o.det,2);
+      document.getElementById("cancel").onclick=()=>{
+        // 取消：回滚本次选 token（为了简单，本版本不回滚；直接提示重选会复杂）
+        Actions.closeModal();
+        Actions.pushOverlay({ type:"INFO", title:"已取消", text:"为保持流程一致，已选走的行动无法回滚。请继续下一步。" });
+        Actions.advanceStep();
+      };
+      return;
+    }
+
+    if(o.type==="JOKER"){
+      const allowSkip = (o.by===PLAYER.JACK);
+      ov.innerHTML = `
+        <div class="sheet">
+          <h2>${o.title}</h2>
+          <p class="hint">选择要移动的侦探（顺时针 1 格）。${allowSkip?"也可选择不动。":""}</p>
+          <div class="row">
+            <button class="primary" id="jH">${Render.detName("HOLMES")}</button>
+            <button class="primary" id="jW">${Render.detName("WATSON")}</button>
+            <button class="primary" id="jT">${Render.detName("TOBY")}</button>
+          </div>
+          ${footer([
+            allowSkip ? `<button class="ghost" id="jSkip">不移动</button>` : ``,
+          ].filter(Boolean))}
+        </div>
+      `;
+      document.getElementById("jH").onclick=()=>Actions.doJoker("HOLMES", true);
+      document.getElementById("jW").onclick=()=>Actions.doJoker("WATSON", true);
+      document.getElementById("jT").onclick=()=>Actions.doJoker("TOBY", true);
+      if(allowSkip) document.getElementById("jSkip").onclick=()=>Actions.doJoker("HOLMES", false);
+      return;
+    }
+
+    if(o.type==="ROTATE_PICK"){
+      ov.innerHTML = `
+        <div class="sheet">
+          <h2>${o.title}</h2>
+          <p class="hint">点击棋盘中间任意一格进行选择。</p>
+          ${footer([`<button class="ghost" id="cancel">取消</button>`])}
+        </div>
+      `;
+      document.getElementById("cancel").onclick=()=>{
+        Actions.closeModal();
+        Actions.pushOverlay({ type:"INFO", title:"已取消", text:"为保持流程一致，已选走的行动无法回滚。请继续下一步。" });
+        Actions.advanceStep();
+      };
+      return;
+    }
+
+    if(o.type==="ROTATE_DEG"){
+      ov.innerHTML = `
+        <div class="sheet">
+          <h2>${o.title}</h2>
+          <p class="hint">选择旋转角度（顺时针/逆时针/180°）。</p>
+          ${footer([
+            `<button class="primary" id="r90">顺时针 90°</button>`,
+            `<button class="primary" id="r180">180°</button>`,
+            `<button class="primary" id="r-90">逆时针 90°</button>`,
+          ])}
+        </div>
+      `;
+      document.getElementById("r90").onclick=()=>Actions.doRotate(o.r,o.c,90);
+      document.getElementById("r180").onclick=()=>Actions.doRotate(o.r,o.c,180);
+      document.getElementById("r-90").onclick=()=>Actions.doRotate(o.r,o.c,-90);
+      return;
+    }
+
+    if(o.type==="EXCHANGE_PICK" || o.type==="EXCHANGE_PICK2"){
+      const hint = o.type==="EXCHANGE_PICK" ? "点击棋盘选第1张" : "点击棋盘选第2张";
+      ov.innerHTML = `
+        <div class="sheet">
+          <h2>${o.title}</h2>
+          <p class="hint">${hint}</p>
+          ${footer([`<button class="ghost" id="cancel">取消</button>`])}
+        </div>
+      `;
+      document.getElementById("cancel").onclick=()=>{
+        Actions.closeModal();
+        Actions.pushOverlay({ type:"INFO", title:"已取消", text:"为保持流程一致，已选走的行动无法回滚。请继续下一步。" });
+        Actions.advanceStep();
+      };
+      return;
+    }
+  },
+
+  render(){
+    Render.renderStatus();
+    Render.renderGrid();
+    Render.renderActions();
+    Render.renderActionMode();
+    Render.renderLog();
+    syncCardHighlight();
+    if(typeof syncResponsiveLayout === "function") syncResponsiveLayout();
+
+    // overlay priority: modal > overlay
+    if(GameState.ui.modal){
+      Render.renderModal();
+    }else{
+      Render.renderOverlay();
+    }
+  }
+};
+
+/**
+ * =========================
+ * 6) 事件绑定
+ * =========================
+ */
+document.getElementById("btnRestart").onclick = ()=> {
+  Actions.pushOverlay({
+    type:"INFO",
+    title:"确认重开？",
+    text:"本局进度将丢失（本版本按要求不使用本地存储）。点击下方“确定重开”。"
+  });
+  // patch: reuse overlay by converting into confirm
+  const ov = document.getElementById("overlay");
+  setTimeout(()=>{
+    if(GameState.ui.overlay && GameState.ui.overlay.type==="INFO"){
+      ov.querySelector(".sheet .footerBtns").innerHTML = `
+        <button class="danger" id="doRestart">确定重开</button>
+        <button class="ghost" id="cancelRestart">取消</button>
+      `;
+      document.getElementById("doRestart").onclick=()=>{ Actions.closeOverlay(); Actions.restart(); };
+      document.getElementById("cancelRestart").onclick=()=> Actions.closeOverlay();
+    }
+  },0);
+};
+
+document.getElementById("btnRules").onclick = ()=> Actions.pushOverlay({ type:"RULES" });
+
+// 顶部按钮区：关闭/开启交接提示（passHint）
+const btnPassHint = document.getElementById("btnPassHint");
+if(btnPassHint){
+  btnPassHint.textContent = GameState.passHint ? "交接(开)" : "交接(关)";
+  btnPassHint.onclick = ()=>{
+    GameState.passHint = !GameState.passHint;
+    Actions.log(`交接提示：${GameState.passHint?"开启":"关闭"}`);
+    btnPassHint.textContent = GameState.passHint ? "交接(开)" : "交接(关)";
+  };
+}
+document.getElementById("btnJackSecret").onclick = ()=>{
+  if(!Rules.canViewJackSecret(GameState)){
+    Actions.hint(`当前阶段不允许查看 ${skinJackName()} 私密`);
+    return;
+  }
+  Actions.pushOverlay({ type:"JACK_SECRET_VIEW" });
+};
+
+document.getElementById("btnWitness").onclick = ()=> Actions.doWitness();
+// btnEditWalls 已隐藏（保留数据结构，不提供入口）
+
+// grid click delegation
+document.getElementById("grid").addEventListener("click", (e)=>{
+  const t = e.target.closest("[data-tile]");
+  if(t){
+    const [r,c]=t.getAttribute("data-tile").split(",").map(x=>parseInt(x,10));
+    // Action Mode 下的棋盘点击控制
+    if(GameState.ui.actionMode){
+      const am = GameState.ui.actionMode;
+
+      // Rotate：先选牌进入预览（不做规则判定，不修改 GameState.rot）
+      if(am.type==="ROTATE"){
+        Actions.rotatePickTile(r,c);
+        return;
+      }
+
+      // Swap：依次点击两张牌
+      if(am.type==="SWAP"){
+        Actions.exchangePick(r,c);
+        return;
+      }
+
+      // 其他 Action Mode：忽略棋盘点击（给轻提示）
+      Actions.hint("当前行动不需要点击棋盘");
+      return;
+    }
+    // 编辑墙：选中 tile
+    if(GameState.phase==="SETUP" && GameState.ui.editWalls){
+      Actions.selectTile(r,c);
+      // 弹出边编辑面板
+      const sel = GameState.ui.selected;
+      const tile = GameState.tiles[sel.r][sel.c];
+      const walls = Rules.rotatedWalls(tile);
+      Actions.pushOverlay({
+        type:"WALL_EDITOR",
+        r: sel.r, c: sel.c
+      });
+      // replace overlay content manually (since we keep overlay types small, we render here)
+      const ov = document.getElementById("overlay");
+      setTimeout(()=>{
+        const sel2 = GameState.ui.selected;
+        const tile2 = GameState.tiles[sel2.r][sel2.c];
+        const curWalls = Rules.rotatedWalls(tile2);
+        const baseWalls = curWalls.map(v=>v?1:0);
+
+        ov.innerHTML = `
+          <div class="sheet">
+            <h2>编辑墙：(${sel2.r+1},${sel2.c+1}) ${Render.tileLabel(tile2)}</h2>
+            <p class="hint">点按边开关墙（相对当前朝向 rot=${tile2.rot*90}°）。<br/>
+            <span class="kbd">普通墙</span> 写入 baseWalls；<span class="kbd">路障墙</span> 写入 barricade（如你有实体“路障方向”可用它）。</p>
+
+            <div class="edgeHint">
+              <span class="pill"><span class="sw ${baseWalls[0]?"on":""}"></span>N</span>
+              <span class="pill"><span class="sw ${baseWalls[1]?"on":""}"></span>E</span>
+              <span class="pill"><span class="sw ${baseWalls[2]?"on":""}"></span>S</span>
+              <span class="pill"><span class="sw ${baseWalls[3]?"on":""}"></span>W</span>
+            </div>
+
+            <div class="row">
+              <button class="primary" id="wN">切换 N 普通墙</button>
+              <button class="primary" id="wE">切换 E 普通墙</button>
+              <button class="primary" id="wS">切换 S 普通墙</button>
+              <button class="primary" id="wW">切换 W 普通墙</button>
+            </div>
+
+            <div class="row">
+              <button class="ghost" id="bN">切换 N 路障墙</button>
+              <button class="ghost" id="bE">切换 E 路障墙</button>
+              <button class="ghost" id="bS">切换 S 路障墙</button>
+              <button class="ghost" id="bW">切换 W 路障墙</button>
+            </div>
+
+            <div class="footerBtns">
+              <button class="ghost" id="closeWall">关闭</button>
+            </div>
+          </div>
+        `;
+        document.getElementById("wN").onclick=()=>Actions.toggleWallOnSelected(0,false);
+        document.getElementById("wE").onclick=()=>Actions.toggleWallOnSelected(1,false);
+        document.getElementById("wS").onclick=()=>Actions.toggleWallOnSelected(2,false);
+        document.getElementById("wW").onclick=()=>Actions.toggleWallOnSelected(3,false);
+
+        document.getElementById("bN").onclick=()=>Actions.toggleWallOnSelected(0,true);
+        document.getElementById("bE").onclick=()=>Actions.toggleWallOnSelected(1,true);
+        document.getElementById("bS").onclick=()=>Actions.toggleWallOnSelected(2,true);
+        document.getElementById("bW").onclick=()=>Actions.toggleWallOnSelected(3,true);
+
+        document.getElementById("closeWall").onclick=()=>Actions.closeOverlay();
+      },0);
+      return;
+    }
+  }
+
+  // ring click:（可扩展为手动移动侦探；本版本移动只通过行动）
+});
+
+// actions click
+document.getElementById("actions").addEventListener("click", (e)=>{
+  const a = e.target.closest("[data-action]");
+  if(!a) return;
+  if(GameState.phase!=="ACTION") return;
+  const tokenId = parseInt(a.getAttribute("data-action"),10);
+  if(!GameState.remainingTokenIds.includes(tokenId)) return;
+  Actions.pickAction(tokenId);
+});
+
+// setup buttons inside actions area (dynamic)
+document.getElementById("actions").addEventListener("click", (e)=>{
+  const skinBtn = e.target.closest("[data-skin]");
+  if(skinBtn){
+    Actions.setSkin(skinBtn.getAttribute("data-skin"));
+    return;
+  }
+  const draw = e.target.closest("#btnDrawId");
+  if(draw){
+    Actions.jackDrawIdentity();
+    return;
+  }
+  const start = e.target.closest("#btnStart");
+  if(start){
+    Actions.startGame();
+    return;
+  }
+});
+
+
+/* === 20260715 responsive sizing: mobile keeps full-width board; desktop fits board beside controls === */
+const DESKTOP_BREAKPOINT = 900;
+
+function isDesktopLayout(){
+  return window.innerWidth >= DESKTOP_BREAKPOINT;
+}
+
+function resizeBoard(){
+  const board = document.getElementById("board");
+  const boardArea = document.querySelector(".board-area");
+  if(!board || !boardArea) return;
+
+  board.style.width = "";
+  board.style.height = "";
+  boardArea.style.height = "";
+
+  if(isDesktopLayout()){
+    const size = Math.max(240, Math.floor(Math.min(boardArea.clientWidth, boardArea.clientHeight)));
+    board.style.width = size + "px";
+    board.style.height = size + "px";
+    boardArea.style.height = "100%";
+    return;
+  }
+
+  const size = window.innerWidth;
+  board.style.width = size + "px";
+  board.style.height = size + "px";
+  boardArea.style.height = size + "px";
+}
+
+/* Small-height fallback remains mobile-only; desktop has a dedicated two-column layout. */
+function autoScale(){
+  const app = document.getElementById("app");
+  if(!app) return;
+
+  if(isDesktopLayout()){
+    app.style.setProperty("--uiScale", "1");
+    app.style.setProperty("--uiScaleInv", "1");
+    return;
+  }
+
+  const top = document.querySelector(".topbar");
+  const topH = top ? top.getBoundingClientRect().height : 0;
+  const boardSize = window.innerWidth;
+  const minBottom = 190;
+  const required = topH + boardSize + minBottom + 8;
+
+  const h = window.innerHeight;
+  let scale = 1;
+  if(h > 0 && required > 0 && h < required){
+    scale = h / required;
+    scale = Math.max(0.65, Math.min(1, scale));
+  }
+
+  app.style.setProperty("--uiScale", String(scale));
+  app.style.setProperty("--uiScaleInv", String(1 / scale));
+}
+
+let responsiveFrame = 0;
+function syncResponsiveLayout(){
+  cancelAnimationFrame(responsiveFrame);
+  responsiveFrame = requestAnimationFrame(()=>{
+    autoScale();
+    resizeBoard();
+  });
+}
+
+window.addEventListener("resize", syncResponsiveLayout);
+
+// initial render
+Render.render();
+syncResponsiveLayout();
+</script>
+</body>
+</html>
