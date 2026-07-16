@@ -41,11 +41,10 @@
       min-height:100dvh;
       height:100dvh;
       max-width:100vw;
-      overflow:hidden; /* 页面不滚动 */
+      overflow:hidden;
       overscroll-behavior: none;
     }
 
-    /* generic surfaces */
     .surface{
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
       border: var(--hair) solid rgba(255,255,255,.08);
@@ -67,7 +66,6 @@
         var(--pagePad);
     }
 
-    /* ===== Top area ===== */
     .topbar{
       display:flex;
       flex-direction:column;
@@ -87,7 +85,6 @@
       border-radius: var(--radius);
       min-height: 54px;
     }
-    .chipRow.surface{ }
     .chip{
       display:inline-flex;
       align-items:center;
@@ -109,22 +106,22 @@
     .chip .dot.bad{ background: var(--danger); box-shadow: 0 0 0 3px rgba(255,92,112,.18); }
 
     .btnRow{
-  display:flex;
-  flex-wrap:wrap;
-  gap: 8px;
-  min-height:0;
-  overflow-x:hidden; /* 禁止横向滚动 */
-}
-.btnRow > button{
-  flex: 1 1 calc(25% - 8px);
-  min-width: 64px;
-  padding: 8px 8px;
-  min-height: 40px;
-  font-size: 12px;
-  white-space: normal;
-  line-height: 1.15;
-  word-break: break-word;
-}
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+      min-height:0;
+      overflow-x:hidden;
+    }
+    .btnRow > button{
+      flex: 1 1 calc(25% - 8px);
+      min-width: 64px;
+      padding: 8px 8px;
+      min-height: 40px;
+      font-size: 12px;
+      white-space: normal;
+      line-height: 1.15;
+      word-break: break-word;
+    }
 
     button{
       border:none;
@@ -147,7 +144,6 @@
     button.ghost{ background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.10); box-shadow:none; }
     button:disabled{ opacity:.45; cursor:not-allowed; }
 
-    /* ===== Main layout ===== */
     .main{
       flex: 1;
       min-height:0;
@@ -167,13 +163,10 @@
     .gridWrap{
       height:100%;
       width:auto;
-  /* max-* removed for board */
-  /* aspect-ratio removed: board sized by JS */
       display:flex;
       min-height:0;
     }
 
-    /* 5x5 grid: outer ring + 3x3 board in the middle */
     #grid{
       width:100%;
       height:100%;
@@ -194,7 +187,7 @@
       border-radius: 14px;
       background: rgba(255,255,255,.05);
       border: var(--hair) solid rgba(255,255,255,.08);
-      display:grid;                /* 不用 absolute */
+      display:grid;
       place-items:center;
       padding: 6px;
       font-weight:800;
@@ -244,7 +237,6 @@
       color: rgba(232,238,247,.80);
     }
 
-    /* ===== Action Mode (in-flow, above operation buttons) ===== */
     .actionMode{
       display:none;
       padding: var(--panelPad);
@@ -267,26 +259,23 @@
       min-height: 0;
     }
 
-    
-
-        /* Action Mode: minimal, no overlap, no horizontal scroll */
-        .actionMode{ overflow-x:hidden; }
-        .actionMode.placeholder{ visibility:hidden; } /* 占位但无内容 */
-        .actionMode .amNote{ opacity:.85; }
-        .actionMode button{
-          padding: 6px 8px;
-          min-height: 38px;
-          font-size: 12px;
-          border-radius: 12px;
-          box-shadow:none;
-        }
-        .actionMode .row{ gap:6px; margin-top: 8px; overflow-x:hidden; min-height:0; }
-        .actionMode .row > button{
-          flex: 1 1 calc(20% - 6px);
-          min-width: 60px; /* 5个按钮一行优先；不足则自动最多两行 */
-          width:auto;
-        }
-        .row{
+    .actionMode{ overflow-x:hidden; }
+    .actionMode.placeholder{ visibility:hidden; }
+    .actionMode .amNote{ opacity:.85; }
+    .actionMode button{
+      padding: 6px 8px;
+      min-height: 38px;
+      font-size: 12px;
+      border-radius: 12px;
+      box-shadow:none;
+    }
+    .actionMode .row{ gap:6px; margin-top: 8px; overflow-x:hidden; min-height:0; }
+    .actionMode .row > button{
+      flex: 1 1 calc(20% - 6px);
+      min-width: 60px;
+      width:auto;
+    }
+    .row{
       display:flex;
       flex-wrap:wrap;
       gap: 8px;
@@ -298,22 +287,18 @@
       box-shadow:none;
     }
 
-    /* ===== Bottom operation area (in-flow) ===== */
     .controls{
       padding: var(--panelPad);
       border-radius: var(--radius);
       background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
       border: var(--hair) solid rgba(255,255,255,.08);
       box-shadow: var(--shadow);
-
       display:grid;
       grid-template-rows: auto auto 1fr;
       gap: var(--gap);
       min-height:0;
       overflow:hidden;
       height: clamp(280px, 42dvh, 420px);
-
-      /* 给棋盘留空间：底部区域不无限长 */
     }
 
     .controlsHeader{
@@ -329,21 +314,21 @@
       letter-spacing: .2px;
     }
     .controlsBtns{
-  display:flex;
-  flex-wrap:wrap;
-  gap: 8px;
-  overflow-x:hidden; /* 禁止横向滚动 */
-}
-.controlsBtns > button{
-  flex: 1 1 calc(50% - 8px);
-  min-width: 110px;
-  padding: 8px 8px;
-  min-height: 40px;
-  font-size: 12px;
-  white-space: normal;
-  line-height: 1.15;
-  word-break: break-word;
-}
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+      overflow-x:hidden;
+    }
+    .controlsBtns > button{
+      flex: 1 1 calc(50% - 8px);
+      min-width: 110px;
+      padding: 8px 8px;
+      min-height: 40px;
+      font-size: 12px;
+      white-space: normal;
+      line-height: 1.15;
+      word-break: break-word;
+    }
 
     .actions{
       display:grid;
@@ -385,7 +370,6 @@
       line-height: 1.2;
     }
 
-    /* ===== Log (internal scroll only) ===== */
     .log{
       min-height: 0;
       overflow:hidden;
@@ -400,38 +384,37 @@
       line-height: 1.25;
       padding: 2px 0;
     }
-    /* ===== In-flow overlay sheet (no fixed, no cover) ===== */
-    /* ===== Fullscreen overlay (highest layer) ===== */
-.overlay.hidden{ display:none; }
-.overlay{
-  position: fixed;
-  inset: 0;
-  z-index: 9999; /* 必须最高 */
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:
-    calc(env(safe-area-inset-top) + 12px)
-    12px
-    calc(env(safe-area-inset-bottom) + 12px)
-    12px;
-  background: rgba(0,0,0,.55);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  overflow:hidden;
-}
-.overlay .sheet{
-  width: min(640px, 100%);
-  max-height: 100%;
-  overflow:hidden;
-  padding: var(--panelPad);
-  border-radius: var(--radius);
-  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-  border: var(--hair) solid rgba(255,255,255,.10);
-  box-shadow: var(--shadow);
-}
 
-.sheet{
+    .overlay.hidden{ display:none; }
+    .overlay{
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:
+        calc(env(safe-area-inset-top) + 12px)
+        12px
+        calc(env(safe-area-inset-bottom) + 12px)
+        12px;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      overflow:hidden;
+    }
+    .overlay .sheet{
+      width: min(640px, 100%);
+      max-height: 100%;
+      overflow:hidden;
+      padding: var(--panelPad);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: var(--hair) solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+    }
+
+    .sheet{
       display:flex;
       flex-direction:column;
       gap: 10px;
@@ -521,929 +504,841 @@
     }
     .pill .sw.on{ background: rgba(74,163,255,.80); border-color: rgba(74,163,255,.45); }
 
-    
-/* 禁止任何区域横向滚动条（保持可点击） */
-#app, .topbar, .chipRow, .btnRow, .controls, .controlsHeader, .controlsBtns, .actions, .boardArea{
-  overflow-x:hidden;
-}
+    #app, .topbar, .chipRow, .btnRow, .controls, .controlsHeader, .controlsBtns, .actions, .boardArea{
+      overflow-x:hidden;
+    }
 
-/* very small phones */
-@media (max-width: 380px){
+    @media (max-width: 380px){
       :root{ --gap: 8px; }
       .btnRow{ grid-template-columns: 1fr 1fr; }
       button{ font-size: 13px; }
       .actions{ grid-template-columns: 1fr 1fr; }
       .row > button{ min-width: 110px; }
     }
-/* ===== Mobile layout overrides (CSS-only, minimal diff) ===== */
-:root{
-  --topH: clamp(64px, 12dvh, 88px);         /* 顶部信息栏尽量压到 12vh 内 */
-  --bottomH: clamp(220px, 34dvh, 300px);    /* 底部操作区固定高度 */
-}
-
-/* overall spacing tighter (still safe-area aware) */
-#app{
-  gap: 8px;
-  padding:
-    calc(env(safe-area-inset-top) + 6px)
-    var(--pagePad)
-    calc(env(safe-area-inset-bottom) + 6px)
-    var(--pagePad);
-}
-
-/* top info bar compact */
-.topbar{
-  flex: 0 0 var(--topH);
-  height: var(--topH);
-  gap: 6px;
-  min-height: 0;
-}
-.chipRow{
-  padding: 6px 8px;
-  gap: 6px;
-  min-height: 34px;
-  flex-wrap: nowrap;        /* 尽量单行 */
-  overflow: hidden;         /* 不出现滚动条 */
-}
-.chip{
-  padding: 3px 6px;
-  font-size: 10px;
-}
-.chip .dot{ width:6px; height:6px; box-shadow: 0 0 0 2px rgba(74,163,255,.18); }
-
-.btnRow{
-  flex-wrap: nowrap;        /* 顶部按钮尽量一行 */
-  gap: 6px;
-}
-.topbar button{
-  min-height: 32px;
-  padding: 4px 8px;
-  font-size: 12px;
-  border-radius: 12px;
-  white-space: nowrap;      /* 避免多行堆叠撑高顶部 */
-}
-
-/* main: board takes the remaining space */
-.main{
-  flex: 1;
-  min-height: 0;
-  gap: 8px;
-  overflow: hidden;         /* 页面不出现竖向滚动 */
-}
-
-/* bottom operation area fixed height */
-.controls{
-  flex: 0 0 var(--bottomH);
-  height: var(--bottomH);
-}
-
-/* board: always a square, almost full width, size not affected by Action Mode */
-.boardArea{
-  flex: 1;
-  min-height: 0;
-  padding: 0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-/* Override JS inline px sizing removed: board sizing via JS only */
-/* Action Mode: bottom slide layer inside actions area only (never covers board) */
-.actionsWrap{
-  position: relative;
-  overflow: hidden;
-}
-.actionsWrap.hasAM .actions{
-  padding-top: 0 !important; /* 取消预留，不改变整体高度 */
-}
-.actionMode{
-  top: auto !important;
-  bottom: 0;
-  transform: translateY(110%);
-  transition: transform .18s ease, opacity .18s ease;
-  max-height: min(var(--amH), 60%);
-}
-.actionsWrap.hasAM .actionMode{
-  transform: translateY(0);
-}
-.actionMode.placeholder{
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(110%);
-}
-
-/* ===== Mobile UI fixes (021105) - minimal diff (layout/text only) ===== */
-
-/* Page scroll disabled (handled by final 021208 override) */
-/* Top info row: single line, no wrap, compact, alibi visible */
-.chipRow{
-  display:flex;
-  flex-wrap: nowrap !important;
-  align-items: center;
-  justify-content: space-between;
-  overflow: hidden;
-  gap: 6px;
-  padding: 6px 8px;
-  min-height: 40px;
-}
-.chip{
-  flex: 1 1 0;
-  min-width: 0;
-  padding: 3px 6px;
-  font-size: 10px;
-  white-space: nowrap;
-  justify-content: center;
-  gap: 4px;
-}
-.chip b{ font-size: 10px; }
-.chip .dot{ width:6px; height:6px; box-shadow: 0 0 0 2px rgba(74,163,255,.18); }
-
-/* Top buttons: single line, no wrap, compact */
-.btnRow{
-  display:flex;
-  flex-wrap: nowrap !important;
-  align-items: center;
-  gap: 6px;
-  overflow: hidden;
-}
-.btnRow > button{
-  flex: 1 1 0;
-  min-width: 0;
-  padding: 4px 8px;
-  min-height: 32px;
-  font-size: 12px;
-  white-space: nowrap;
-  line-height: 1.1;
-}
-
-/* Board: square by width, no internal scrolling */
-.boardArea{
-  padding: 0;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-.gridWrap{
-  /* width controlled by JS (window.innerWidth) */
-  /* height controlled by JS (window.innerWidth) */
-  /* aspect-ratio removed: board sized by JS */
-  margin: 0 auto;
-  overflow: hidden;
-}
-#grid{ overflow: hidden; }
-
-/* Action Mode overlays the entire operation area (red box), without affecting board size */
-.controls{ position: relative; }
-.actionMode{
-  position: absolute;
-  inset: 0;
-  z-index: 50;
-  display: block; /* JS still sets display; placeholder hides */
-  overflow: hidden;
-  padding: var(--panelPad);
-  background: linear-gradient(180deg, rgba(11,15,20,.92), rgba(11,15,20,.82));
-  border: var(--hair) solid rgba(255,255,255,.10);
-  box-shadow: var(--shadow);
-}
-.actionMode.placeholder{ display: none !important; }
-.actionMode .row{ overflow: hidden; }
-
-/* ===== Action Mode fix (021107) =====
-   - default hidden: display:none
-   - JS toggles inline display
-   - neutralize old slide/transform/absolute overlay rules that can keep it off-screen
-*/
-.actionMode{
-  display:none;               /* default hidden */
-  position: relative !important;
-  inset: auto !important;
-  top: auto !important;
-  right: auto !important;
-  bottom: auto !important;
-  left: auto !important;
-  transform: none !important;
-  transition: none !important;
-  z-index: 6;                 /* above actions, below fullscreen overlay */
-  overflow: hidden;
-  min-height: 0;
-}
-
-/* If JS sets inline display:block, force it visible even if earlier CSS had !important */
-.actionMode[style*="display: block"],
-.actionMode[style*="display:block"]{
-  display:block !important;
-}
-
-/* placeholder = truly hidden */
-.actionMode.placeholder{
-  display:none !important;
-  visibility:hidden !important;
-  opacity:0 !important;
-  pointer-events:none !important;
-}
-
-/* Panel layout stability: header -> actionMode -> actions -> log */
-.controls{
-  display:grid;
-  grid-template-rows: auto auto 1fr auto;
-  overflow:hidden;
-  min-height: 0;
-}
-.controlsHeader{ grid-row: 1; }
-.actionMode{ grid-row: 2; }
-.actions{ grid-row: 3; min-height:0; overflow:hidden; }
-.log{
-  grid-row: 4;
-  height: 96px;
-  max-height: 96px;
-  overflow:hidden;
-}
-
-/* ===== Final layout overrides (021108) - minimal diff (layout only) =====
-   Target layout:
-   [Top status]
-   [Square board]
-   [Action area (fixed, no scroll)]
-   [Log (2 lines, scroll)]
-*/
-
-/* Page must NOT scroll */
-html, body{
-  height: 100dvh !important;
-  overflow: hidden !important;
-}
-#app{
-  height: 100dvh !important;
-  min-height: 100dvh !important;
-  overflow: hidden !important;
-  gap: 6px !important;
-  padding:
-    calc(env(safe-area-inset-top) + 6px)
-    var(--pagePad)
-    calc(env(safe-area-inset-bottom) + 6px)
-    var(--pagePad) !important;
-}
-
-/* Top bar: compact (single-line chips + single-line buttons) */
-.topbar{
-  gap: 6px !important;
-  flex: 0 0 auto;
-}
-.chipRow{
-  flex-wrap: nowrap !important;
-  justify-content: space-between !important;
-  gap: 4px !important;
-  padding: 4px 6px !important;
-  min-height: 30px !important;
-}
-.chip{
-  flex: 1 1 0 !important;
-  min-width: 0 !important;
-  padding: 2px 5px !important;
-  font-size: 10px !important;
-  gap: 4px !important;
-  white-space: nowrap !important;
-  justify-content: center !important;
-}
-.chip.inv-action{ background: rgba(255,92,112,.20); }
-.chip b{ font-size: 10px !important; }
-.chip .dot{ width:6px !important; height:6px !important; }
-
-.btnRow{
-  flex-wrap: nowrap !important;
-  gap: 6px !important;
-  overflow: hidden !important;
-}
-.btnRow > button{
-  flex: 1 1 0 !important;
-  min-width: 0 !important;
-  min-height: 34px !important;
-  padding: 8px 12px !important;
-  font-size: 14px !important;
-  white-space: nowrap !important;
-  line-height: 1.1 !important;
-}
-
-/* Main area: no scroll */
-.main{
-  flex: 1 1 auto;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  gap: 6px !important;
-}
-
-/* Board: square, as large as possible, no internal scroll */
-.boardArea{
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  padding: 8px !important;
-  overflow: hidden !important;
-}
-.gridWrap{
-  /* width controlled by JS (window.innerWidth) */
-  /* max-* removed for board */
-  /* max-* removed for board */
-  /* height controlled by JS (window.innerWidth) */
-  /* aspect-ratio removed: board sized by JS */
-  margin: 0 auto !important;
-  overflow: hidden !important;
-}
-#grid{ overflow: hidden !important; }
-
-/* Bottom: fixed action area + fixed log (2 lines) */
-:root{
-  --logH: 44px; /* about 2 lines */
-  --controlsH: clamp(210px, 28dvh, 260px);
-}
-
-.controls{
-  height: var(--controlsH) !important;   /* fixed height => board unaffected */
-  overflow: hidden !important;
-  padding: 8px !important;
-  gap: 6px !important;
-  display: grid !important;
-  grid-template-rows: auto 1fr var(--logH) !important; /* header / action area / log */
-}
-
-/* Action area: must NOT scroll */
-.controlsHeader{ overflow: hidden !important; }
-.actions{
-  overflow: hidden !important; /* no scroll */
-  min-height: 0 !important;
-}
-.actionBtn{
-  min-height: 54px !important;
-  padding: 8px 10px !important;
-}
-
-/* Action Mode stays above actions; JS toggles display; do not let old rules move it off-screen */
-.actionMode{
-  display: none;              /* default hidden */
-  position: relative !important;
-  transform: none !important;
-  transition: none !important;
-  inset: auto !important;
-  z-index: 6;
-}
-.actionMode[style*="display: block"],
-.actionMode[style*="display:block"]{ display:block !important; }
-.actionMode.placeholder{ display:none !important; }
-
-/* Log: 2 lines height, scroll */
-.log{
-  height: var(--logH) !important;
-  max-height: var(--logH) !important;
-  overflow: hidden !important;
-  padding: 6px 8px !important;
-}
-.log .line{
-  font-size: 12px !important;
-  line-height: 1.2 !important;
-  padding: 1px 0 !important;
-}
-
-/* No horizontal scroll anywhere */
-#app, .topbar, .chipRow, .btnRow, .controls, .controlsHeader, .controlsBtns, .actions, .boardArea{
-  overflow-x: hidden !important;
-}
-
-/* === UI fix (021109): remove setup tip card, keep action buttons always visible === */
-
-/* Hide the stage button when disabled so it doesn't steal space (it is only clickable in WITNESS) */
-#btnWitness:disabled{
-  display:none !important;
-}
-
-/* Compact header spacing to free room for action buttons */
-.controlsHeader{
-  gap: 4px !important;
-}
-.controlsHeader h3{
-  font-size: 12px !important;
-  line-height: 1.1 !important;
-}
-
-/* Ensure action row has a minimum height for 2x2 action buttons; log stays fixed */
-.controls{
-  grid-template-rows: auto auto minmax(104px, 1fr) var(--logH) !important;
-}
-
-/* Action buttons tighter so they fit without scrolling/clipping */
-.actions{
-  gap: 6px !important;
-  overflow: visible !important;   /* no scroll, no clipping */
-}
-.actionBtn{
-  min-height: 46px !important;
-  padding: 6px 8px !important;
-  border-radius: 12px !important;
-}
-.actionBtn .title{
-  font-size: 12px !important;
-  line-height: 1.1 !important;
-}
-
-/* SETUP phase <button> in actions area: compact */
-.actions button{
-  min-height: 40px !important;
-  padding: 8px 10px !important;
-  font-size: 14px !important;
-}
-
-/* === UI fix (021110): tighten vertical gaps + Action Mode as subpage (no JS change) === */
-
-/* 1) Reduce visible blank space between top / board / controls */
-#app{ gap: 4px !important; }
-.main{ gap: 4px !important; }
-
-/* Use grid so board takes natural height, remaining height goes to controls (no blank gaps between sections) */
-.main{
-  display: grid !important;
-  grid-template-rows: auto 1fr !important;
-  align-content: start !important;
-}
-
-/* Board area: hug content, keep tiny padding only */
-.boardArea{
-  flex: 0 0 auto !important;
-  padding: 0 !important;
-}
-
-/* Controls: fill the remaining height, keep header/log fixed, give action panel full middle height */
-.controls{
-  height: 100% !important;
-  padding: 6px 8px !important;
-  gap: 4px !important;
-  grid-template-rows: auto 1fr var(--logH) !important;
-}
-
-/* 2) Action Mode becomes an in-panel "subpage": it replaces actions (never both occupy space) */
-.actionPanel{
-  position: relative !important;
-  min-height: 0 !important;
-  overflow: hidden !important; /* no scroll + no overlap into log */
-  flex: 0 0 auto !important;
-}
-
-/* actions fill panel when no actionMode */
-.actionPanel .actions{
-  height: 100% !important;
-}
-
-/* actionMode covers the whole action panel when shown */
-.actionPanel .actionMode{
-  position: absolute !important;
-  inset: 0 !important;          /* cover full actionPanel */
-  z-index: 50 !important;
-  height: 100% !important;
-  max-height: none !important;  /* remove old max-height limit */
-  overflow: hidden !important;  /* no scrollbars; content must fit */
-  transform: none !important;   /* cancel any old slide-away rules */
-  transition: none !important;  /* avoid legacy slide animations */
-  flex-direction: column !important;
-  gap: 6px !important;
-  padding: 8px 8px !important;  /* slightly tighter to fit "取消" fully */
-}
-/* keep primary button row visible at the bottom of the panel */
-.actionPanel .actionMode .row{ margin-top: auto !important; }
-.actionPanel .actionMode .hint{ font-size: 12px !important; line-height: 1.2 !important; }
-.actionPanel .actionMode button{
-  min-height: 36px !important;
-  padding: 6px 8px !important;
-  font-size: 12px !important;
-}
-
-/* When JS turns actionMode on (inline display:block), hide actions entirely */
-.actionPanel .actionMode[style*="display:block"],
-.actionPanel .actionMode[style*="display: block"]{
-  display: flex !important;
-}
-.actionPanel .actionMode[style*="display:block"] ~ .actions,
-.actionPanel .actionMode[style*="display: block"] ~ .actions{
-  display: none !important;
-}
-
-
-/* === 021208 minimal diff: board = window.innerWidth (JS), no scroll anywhere, bottom compresses === */
-html, body{
-  margin: 0 !important;
-  padding: 0 !important;
-  height: 100% !important;
-  overflow: hidden !important;
-}
-
-#app.app{
-  height: 100vh !important;
-  display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important;
-
-  /* board must reach screen edges */
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-
-  /* small-height fallback scaling (set by JS only when needed) */
-  transform: scale(var(--uiScale, 1));
-  transform-origin: top center;
-}
-
-/* keep overlay fullscreen even if app is scaled */
-#overlay{
-  transform: scale(var(--uiScaleInv, 1));
-  transform-origin: top left;
-  width: 100vw;
-  height: 100vh;
-}
-
-.topbar{
-  flex: 0 0 auto;
-  margin-left: var(--pagePad);
-  margin-right: var(--pagePad);
-}
-
-.main{
-  flex: 1 1 auto !important;
-  display: flex !important;
-  flex-direction: column !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  padding: 0 !important; /* allow board to reach screen edges */
-}
-
-/* board-area fixed height set by JS; do NOT shrink board */
-.boardArea.board-area{
-  flex: 0 0 auto !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: flex-start !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  overflow: hidden !important;
-}
-
-/* board is squared by JS; no aspect-ratio/max-height */
-#board.board{
-  flex-shrink: 0 !important;
-  overflow: hidden !important;
-  padding: 8px !important; /* make board visually larger */
-  aspect-ratio: unset !important;
-  max-height: none !important;
-  max-width: none !important;
-}
-
-/* neutralize any previous aspect-ratio/max-height */
-.gridWrap{
-  aspect-ratio: unset !important;
-  max-height: none !important;
-  max-width: none !important;
-}
-
-/* bottom-area compresses; never scrolls */
-.controls.bottom-area{
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  height: auto !important;
-  display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important;
-  margin-left: var(--pagePad);
-  margin-right: var(--pagePad);
-}
-
-.controlsHeader{
-  flex: 0 0 auto !important;
-}
-
-.actionPanel{
-  position: relative !important;
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-}
-
-.actions{
-  height: 100% !important;
-  overflow: hidden !important; /* no internal scroll */
-}
-
-.log{
-  flex: 0 0 44px !important;
-  height: 44px !important;
-  overflow: hidden !important; /* no internal scroll */
-}
-
-/* ActionMode fully covers actionPanel (no scroll, no transform slide) */
-.actionPanel .actionMode{
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  overflow: hidden !important;
-  transform: none !important;
-  bottom: auto !important;
-  max-height: none !important;
-  display: none;
-}
-
-/* When JS sets display:block, render as flex so cancel row stays visible */
-.actionPanel .actionMode[style*="display: block"],
-.actionPanel .actionMode[style*="display:block"]{
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-/* ActionMode replaces actions visually (prevents "cancel" being under buttons) */
-.actionPanel .actionMode[style*="display: block"] ~ .actions,
-.actionPanel .actionMode[style*="display:block"] ~ .actions{
-  visibility: hidden !important;
-}
-
-/* Keep cancel row inside panel */
-.actionMode .row{
-  margin-top: auto !important;
-}
-
-
-/* === Skin selector header (minimal diff) === */
-.controlsHeader{
-  grid-template-columns: auto minmax(0, 1fr) !important;
-  align-items: center !important;
-}
-.controlsHeader h3{
-  grid-column: 1 !important;
-  white-space: nowrap !important;
-}
-.skinHeader{
-  grid-column: 2 !important;
-  justify-self: end !important;
-  display: none;
-  align-items: center;
-  gap: 8px;
-  max-width: 100%;
-  min-width: 0;
-}
-.skinHeader .skinTitle{
-  font-size: 12px;
-  color: rgba(232,238,247,.78);
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.controlsBtns{
-  grid-column: 1 / -1 !important;
-}
-.skinPickRow{
-  grid-column: 1 / -1;
-  display: flex;
-  gap: 8px;
-  flex-wrap: nowrap;
-  margin-bottom: 2px;
-}
-.skinPickRow button{
-  flex: 1 1 0;
-  min-width: 0;
-  padding: 6px 6px;
-  min-height: 34px;
-  font-size: 12px;
-  white-space: nowrap;
-}
-@media (max-width: 420px){
-  .skinHeader .skinTitle{
-    font-size: 11px;
-    max-width: 220px;
-  }
-  .skinPickRow{
-    gap: 6px;
-  }
-  .skinPickRow button{
-    font-size: 11px;
-    padding-left: 4px;
-    padding-right: 4px;
-  }
-}
-
-
-/* === 20260715 requested display/background update (layout + skin backgrounds only) === */
-body[data-skin="bao"]{ --skin-bg-image: url("/bg-bao-mobile.avif"); }
-body[data-skin="di"]{ --skin-bg-image: url("/bg-di-mobile.avif"); }
-body[data-skin="zhen"]{ --skin-bg-image: url("/bg-zhen-mobile.avif"); }
-
-body[data-skin="bao"],
-body[data-skin="di"],
-body[data-skin="zhen"]{
-  background:
-    linear-gradient(180deg, rgba(5,9,14,.46), rgba(5,9,14,.70)),
-    var(--skin-bg-image) center center / cover no-repeat,
-    var(--bg);
-}
-
-@media (min-width: 900px){
-  body[data-skin="bao"]{ --skin-bg-image: url("/bg-bao-desktop.avif"); }
-  body[data-skin="di"]{ --skin-bg-image: url("/bg-di-desktop.avif"); }
-  body[data-skin="zhen"]{ --skin-bg-image: url("/bg-zhen-desktop.avif"); }
-
-  #app.app{
-    padding: 16px 18px 18px !important;
-    gap: 12px !important;
-    transform: none !important;
-    transform-origin: initial !important;
-  }
-
-  .topbar{
-    margin: 0 !important;
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) auto !important;
-    align-items: stretch !important;
-    gap: 12px !important;
-  }
-  .chipRow{
-    min-height: 52px !important;
-    padding: 8px 10px !important;
-    gap: 7px !important;
-    flex-wrap: wrap !important;
-    justify-content: flex-start !important;
-    align-content: center !important;
-    overflow: hidden !important;
-  }
-  .chip{
-    flex: 0 1 auto !important;
-    padding: 6px 10px !important;
-    gap: 6px !important;
-    font-size: 13px !important;
-  }
-  .chip b{ font-size: 13px !important; }
-  .chip .dot{ width: 8px !important; height: 8px !important; }
-
-  .btnRow{
-    width: clamp(420px, 36vw, 560px);
-    gap: 8px !important;
-    overflow: visible !important;
-  }
-  .btnRow > button{
-    min-width: 96px !important;
-    min-height: 46px !important;
-    padding: 10px 12px !important;
-    border-radius: 14px !important;
-    font-size: 15px !important;
-    line-height: 1.15 !important;
-  }
-
-  .main{
-    flex: 1 1 auto !important;
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) clamp(380px, 30vw, 520px) !important;
-    grid-template-rows: minmax(0, 1fr) !important;
-    align-items: stretch !important;
-    gap: 14px !important;
-    min-height: 0 !important;
-    overflow: hidden !important;
-  }
-
-  .boardArea.board-area{
-    width: 100% !important;
-    height: 100% !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-    align-items: center !important;
-    justify-content: center !important;
-    overflow: hidden !important;
-  }
-  #board.board{
-    padding: 10px !important;
-    border-radius: 22px !important;
-  }
-  #grid{
-    gap: clamp(7px, .7vw, 11px) !important;
-    padding: clamp(7px, .8vw, 12px) !important;
-  }
-  .ringCell{
-    padding: 8px !important;
-    font-size: clamp(14px, 1.1vw, 18px) !important;
-  }
-  .ringCell .small{ font-size: 13px !important; }
-  .tile{
-    padding: clamp(8px, .8vw, 12px) !important;
-  }
-  .tile .name{
-    font-size: clamp(13px, 1vw, 16px) !important;
-    line-height: 1.15 !important;
-  }
-
-  .controls.bottom-area{
-    width: 100% !important;
-    height: 100% !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 14px !important;
-    gap: 10px !important;
-    border-radius: 18px !important;
-  }
-  .controlsHeader{
-    gap: 8px !important;
-    overflow: visible !important;
-  }
-  .controlsHeader h3{
-    font-size: 18px !important;
-    line-height: 1.2 !important;
-  }
-  .skinHeader{
-    gap: 10px !important;
-  }
-  .skinHeader .skinTitle{
-    max-width: none !important;
-    font-size: 14px !important;
-  }
-  .controlsBtns{
-    gap: 8px !important;
-    overflow: visible !important;
-  }
-  .controlsBtns > button{
-    min-height: 44px !important;
-    padding: 9px 12px !important;
-    font-size: 15px !important;
-  }
-  .skinPickRow{
-    gap: 8px !important;
-    margin-bottom: 4px !important;
-  }
-  .skinPickRow button{
-    min-height: 44px !important;
-    padding: 9px 8px !important;
-    font-size: 15px !important;
-  }
-
-  .actionPanel{
-    min-height: 0 !important;
-  }
-  .actions{
-    gap: 12px !important;
-    overflow-y: auto !important;
-  }
-  .actions button{
-    min-height: 48px !important;
-    padding: 10px 12px !important;
-    font-size: 15px !important;
-  }
-  .actionBtn{
-    min-height: 88px !important;
-    padding: 14px !important;
-    border-radius: 15px !important;
-  }
-  .actionBtn .tag{ font-size: 13px !important; }
-  .actionBtn .title{
-    font-size: 18px !important;
-    line-height: 1.2 !important;
-  }
-  .actionBtn .meta{ font-size: 13px !important; }
-
-  .actionPanel .actionMode{
-    gap: 10px !important;
-    padding: 14px !important;
-    overflow-y: auto !important;
-  }
-  .actionPanel .actionMode .title{ font-size: 17px !important; }
-  .actionPanel .actionMode .hint{
-    font-size: 15px !important;
-    line-height: 1.4 !important;
-  }
-  .actionPanel .actionMode button{
-    min-height: 44px !important;
-    padding: 9px 12px !important;
-    font-size: 15px !important;
-  }
-
-  .log{
-    flex: 0 0 86px !important;
-    height: 86px !important;
-    max-height: 86px !important;
-    padding: 9px 11px !important;
-    overflow-y: auto !important;
-  }
-  .log .line{
-    font-size: 14px !important;
-    line-height: 1.35 !important;
-    padding: 2px 0 !important;
-  }
-
-  .overlay{
-    padding: 24px !important;
-  }
-  .overlay .sheet{
-    width: min(760px, 100%) !important;
-    max-height: calc(100vh - 48px) !important;
-    padding: 18px !important;
-    overflow-y: auto !important;
-  }
-  .sheet h2{ font-size: 20px !important; }
-  .sheet p{ font-size: 15px !important; }
-  .sheet p.hint{ font-size: 14px !important; }
-  .footerBtns button{
-    min-height: 44px !important;
-    font-size: 15px !important;
-  }
-}
-
-</style>
+
+    :root{
+      --topH: clamp(64px, 12dvh, 88px);
+      --bottomH: clamp(220px, 34dvh, 300px);
+    }
+
+    #app{
+      gap: 8px;
+      padding:
+        calc(env(safe-area-inset-top) + 6px)
+        var(--pagePad)
+        calc(env(safe-area-inset-bottom) + 6px)
+        var(--pagePad);
+    }
+
+    .topbar{
+      flex: 0 0 var(--topH);
+      height: var(--topH);
+      gap: 6px;
+      min-height: 0;
+    }
+    .chipRow{
+      padding: 6px 8px;
+      gap: 6px;
+      min-height: 34px;
+      flex-wrap: nowrap;
+      overflow: hidden;
+    }
+    .chip{
+      padding: 3px 6px;
+      font-size: 10px;
+    }
+    .chip .dot{ width:6px; height:6px; box-shadow: 0 0 0 2px rgba(74,163,255,.18); }
+
+    .btnRow{
+      flex-wrap: nowrap;
+      gap: 6px;
+    }
+    .topbar button{
+      min-height: 32px;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 12px;
+      white-space: nowrap;
+    }
+
+    .main{
+      flex: 1;
+      min-height: 0;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .controls{
+      flex: 0 0 var(--bottomH);
+      height: var(--bottomH);
+    }
+
+    .boardArea{
+      flex: 1;
+      min-height: 0;
+      padding: 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .actionsWrap{
+      position: relative;
+      overflow: hidden;
+    }
+    .actionsWrap.hasAM .actions{
+      padding-top: 0 !important;
+    }
+    .actionMode{
+      top: auto !important;
+      bottom: 0;
+      transform: translateY(110%);
+      transition: transform .18s ease, opacity .18s ease;
+      max-height: min(var(--amH), 60%);
+    }
+    .actionsWrap.hasAM .actionMode{
+      transform: translateY(0);
+    }
+    .actionMode.placeholder{
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(110%);
+    }
+
+    .chipRow{
+      display:flex;
+      flex-wrap: nowrap !important;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
+      gap: 6px;
+      padding: 6px 8px;
+      min-height: 40px;
+    }
+    .chip{
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 3px 6px;
+      font-size: 10px;
+      white-space: nowrap;
+      justify-content: center;
+      gap: 4px;
+    }
+    .chip b{ font-size: 10px; }
+    .chip .dot{ width:6px; height:6px; box-shadow: 0 0 0 2px rgba(74,163,255,.18); }
+
+    .btnRow{
+      display:flex;
+      flex-wrap: nowrap !important;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+    }
+    .btnRow > button{
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 4px 8px;
+      min-height: 32px;
+      font-size: 12px;
+      white-space: nowrap;
+      line-height: 1.1;
+    }
+
+    .boardArea{
+      padding: 0;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .gridWrap{
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    #grid{ overflow: hidden; }
+
+    .controls{ position: relative; }
+    .actionMode{
+      position: absolute;
+      inset: 0;
+      z-index: 50;
+      display: block;
+      overflow: hidden;
+      padding: var(--panelPad);
+      background: linear-gradient(180deg, rgba(11,15,20,.92), rgba(11,15,20,.82));
+      border: var(--hair) solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+    }
+    .actionMode.placeholder{ display: none !important; }
+    .actionMode .row{ overflow: hidden; }
+
+    .actionMode{
+      display:none;
+      position: relative !important;
+      inset: auto !important;
+      top: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      left: auto !important;
+      transform: none !important;
+      transition: none !important;
+      z-index: 6;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .actionMode[style*="display: block"],
+    .actionMode[style*="display:block"]{
+      display:block !important;
+    }
+
+    .actionMode.placeholder{
+      display:none !important;
+      visibility:hidden !important;
+      opacity:0 !important;
+      pointer-events:none !important;
+    }
+
+    .controls{
+      display:grid;
+      grid-template-rows: auto auto 1fr auto;
+      overflow:hidden;
+      min-height: 0;
+    }
+    .controlsHeader{ grid-row: 1; }
+    .actionMode{ grid-row: 2; }
+    .actions{ grid-row: 3; min-height:0; overflow:hidden; }
+    .log{
+      grid-row: 4;
+      height: 96px;
+      max-height: 96px;
+      overflow:hidden;
+    }
+
+    html, body{
+      height: 100dvh !important;
+      overflow: hidden !important;
+    }
+    #app{
+      height: 100dvh !important;
+      min-height: 100dvh !important;
+      overflow: hidden !important;
+      gap: 6px !important;
+      padding:
+        calc(env(safe-area-inset-top) + 6px)
+        var(--pagePad)
+        calc(env(safe-area-inset-bottom) + 6px)
+        var(--pagePad) !important;
+    }
+
+    .topbar{
+      gap: 6px !important;
+      flex: 0 0 auto;
+    }
+    .chipRow{
+      flex-wrap: nowrap !important;
+      justify-content: space-between !important;
+      gap: 4px !important;
+      padding: 4px 6px !important;
+      min-height: 30px !important;
+    }
+    .chip{
+      flex: 1 1 0 !important;
+      min-width: 0 !important;
+      padding: 2px 5px !important;
+      font-size: 10px !important;
+      gap: 4px !important;
+      white-space: nowrap !important;
+      justify-content: center !important;
+    }
+    .chip.inv-action{ background: rgba(255,92,112,.20); }
+    .chip b{ font-size: 10px !important; }
+    .chip .dot{ width:6px !important; height:6px !important; }
+
+    .btnRow{
+      flex-wrap: nowrap !important;
+      gap: 6px !important;
+      overflow: hidden !important;
+    }
+    .btnRow > button{
+      flex: 1 1 0 !important;
+      min-width: 0 !important;
+      min-height: 34px !important;
+      padding: 8px 12px !important;
+      font-size: 14px !important;
+      white-space: nowrap !important;
+      line-height: 1.1 !important;
+    }
+
+    .main{
+      flex: 1 1 auto;
+      min-height: 0 !important;
+      overflow: hidden !important;
+      gap: 6px !important;
+    }
+
+    .boardArea{
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      padding: 8px !important;
+      overflow: hidden !important;
+    }
+    .gridWrap{
+      margin: 0 auto !important;
+      overflow: hidden !important;
+    }
+    #grid{ overflow: hidden !important; }
+
+    :root{
+      --logH: 44px;
+      --controlsH: clamp(210px, 28dvh, 260px);
+    }
+
+    .controls{
+      height: var(--controlsH) !important;
+      overflow: hidden !important;
+      padding: 8px !important;
+      gap: 6px !important;
+      display: grid !important;
+      grid-template-rows: auto 1fr var(--logH) !important;
+    }
+
+    .controlsHeader{ overflow: hidden !important; }
+    .actions{
+      overflow: hidden !important;
+      min-height: 0 !important;
+    }
+    .actionBtn{
+      min-height: 54px !important;
+      padding: 8px 10px !important;
+    }
+
+    .actionMode{
+      display: none;
+      position: relative !important;
+      transform: none !important;
+      transition: none !important;
+      inset: auto !important;
+      z-index: 6;
+    }
+    .actionMode[style*="display: block"],
+    .actionMode[style*="display:block"]{ display:block !important; }
+    .actionMode.placeholder{ display:none !important; }
+
+    .log{
+      height: var(--logH) !important;
+      max-height: var(--logH) !important;
+      overflow: hidden !important;
+      padding: 6px 8px !important;
+    }
+    .log .line{
+      font-size: 12px !important;
+      line-height: 1.2 !important;
+      padding: 1px 0 !important;
+    }
+
+    #app, .topbar, .chipRow, .btnRow, .controls, .controlsHeader, .controlsBtns, .actions, .boardArea{
+      overflow-x: hidden !important;
+    }
+
+    #btnWitness:disabled{
+      display:none !important;
+    }
+
+    .controlsHeader{
+      gap: 4px !important;
+    }
+    .controlsHeader h3{
+      font-size: 12px !important;
+      line-height: 1.1 !important;
+    }
+
+    .controls{
+      grid-template-rows: auto auto minmax(104px, 1fr) var(--logH) !important;
+    }
+
+    .actions{
+      gap: 6px !important;
+      overflow: visible !important;
+    }
+    .actionBtn{
+      min-height: 46px !important;
+      padding: 6px 8px !important;
+      border-radius: 12px !important;
+    }
+    .actionBtn .title{
+      font-size: 12px !important;
+      line-height: 1.1 !important;
+    }
+
+    .actions button{
+      min-height: 40px !important;
+      padding: 8px 10px !important;
+      font-size: 14px !important;
+    }
+
+    #app{ gap: 4px !important; }
+    .main{ gap: 4px !important; }
+
+    .main{
+      display: grid !important;
+      grid-template-rows: auto 1fr !important;
+      align-content: start !important;
+    }
+
+    .boardArea{
+      flex: 0 0 auto !important;
+      padding: 0 !important;
+    }
+
+    .controls{
+      height: 100% !important;
+      padding: 6px 8px !important;
+      gap: 4px !important;
+      grid-template-rows: auto 1fr var(--logH) !important;
+    }
+
+    .actionPanel{
+      position: relative !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+      flex: 0 0 auto !important;
+    }
+
+    .actionPanel .actions{
+      height: 100% !important;
+    }
+
+    .actionPanel .actionMode{
+      position: absolute !important;
+      inset: 0 !important;
+      z-index: 50 !important;
+      height: 100% !important;
+      max-height: none !important;
+      overflow: hidden !important;
+      transform: none !important;
+      transition: none !important;
+      flex-direction: column !important;
+      gap: 6px !important;
+      padding: 8px 8px !important;
+    }
+    .actionPanel .actionMode .row{ margin-top: auto !important; }
+    .actionPanel .actionMode .hint{ font-size: 12px !important; line-height: 1.2 !important; }
+    .actionPanel .actionMode button{
+      min-height: 36px !important;
+      padding: 6px 8px !important;
+      font-size: 12px !important;
+    }
+
+    .actionPanel .actionMode[style*="display:block"],
+    .actionPanel .actionMode[style*="display: block"]{
+      display: flex !important;
+    }
+    .actionPanel .actionMode[style*="display:block"] ~ .actions,
+    .actionPanel .actionMode[style*="display: block"] ~ .actions{
+      display: none !important;
+    }
+
+    html, body{
+      margin: 0 !important;
+      padding: 0 !important;
+      height: 100% !important;
+      overflow: hidden !important;
+    }
+
+    #app.app{
+      height: 100vh !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      transform: scale(var(--uiScale, 1));
+      transform-origin: top center;
+    }
+
+    #overlay{
+      transform: scale(var(--uiScaleInv, 1));
+      transform-origin: top left;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .topbar{
+      flex: 0 0 auto;
+      margin-left: var(--pagePad);
+      margin-right: var(--pagePad);
+    }
+
+    .main{
+      flex: 1 1 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+      padding: 0 !important;
+    }
+
+    .boardArea.board-area{
+      flex: 0 0 auto !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: flex-start !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+    }
+
+    #board.board{
+      flex-shrink: 0 !important;
+      overflow: hidden !important;
+      padding: 8px !important;
+      aspect-ratio: unset !important;
+      max-height: none !important;
+      max-width: none !important;
+    }
+
+    .gridWrap{
+      aspect-ratio: unset !important;
+      max-height: none !important;
+      max-width: none !important;
+    }
+
+    .controls.bottom-area{
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      height: auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      margin-left: var(--pagePad);
+      margin-right: var(--pagePad);
+    }
+
+    .controlsHeader{
+      flex: 0 0 auto !important;
+    }
+
+    .actionPanel{
+      position: relative !important;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    .actions{
+      height: 100% !important;
+      overflow: hidden !important;
+    }
+
+    .log{
+      flex: 0 0 44px !important;
+      height: 44px !important;
+      overflow: hidden !important;
+    }
+
+    .actionPanel .actionMode{
+      position: absolute !important;
+      inset: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      overflow: hidden !important;
+      transform: none !important;
+      bottom: auto !important;
+      max-height: none !important;
+      display: none;
+    }
+
+    .actionPanel .actionMode[style*="display: block"],
+    .actionPanel .actionMode[style*="display:block"]{
+      display: flex !important;
+      flex-direction: column !important;
+    }
+
+    .actionPanel .actionMode[style*="display: block"] ~ .actions,
+    .actionPanel .actionMode[style*="display:block"] ~ .actions{
+      visibility: hidden !important;
+    }
+
+    .actionMode .row{
+      margin-top: auto !important;
+    }
+
+    .controlsHeader{
+      grid-template-columns: auto minmax(0, 1fr) !important;
+      align-items: center !important;
+    }
+    .controlsHeader h3{
+      grid-column: 1 !important;
+      white-space: nowrap !important;
+    }
+    .skinHeader{
+      grid-column: 2 !important;
+      justify-self: end !important;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      max-width: 100%;
+      min-width: 0;
+    }
+    .skinHeader .skinTitle{
+      font-size: 12px;
+      color: rgba(232,238,247,.78);
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .controlsBtns{
+      grid-column: 1 / -1 !important;
+    }
+    .skinPickRow{
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 8px;
+      flex-wrap: nowrap;
+      margin-bottom: 2px;
+    }
+    .skinPickRow button{
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 6px 6px;
+      min-height: 34px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    @media (max-width: 420px){
+      .skinHeader .skinTitle{
+        font-size: 11px;
+        max-width: 220px;
+      }
+      .skinPickRow{
+        gap: 6px;
+      }
+      .skinPickRow button{
+        font-size: 11px;
+        padding-left: 4px;
+        padding-right: 4px;
+      }
+    }
+
+    body[data-skin="bao"]{ --skin-bg-image: url("/bg-bao-mobile.avif"); }
+    body[data-skin="di"]{ --skin-bg-image: url("/bg-di-mobile.avif"); }
+    body[data-skin="zhen"]{ --skin-bg-image: url("/bg-zhen-mobile.avif"); }
+
+    body[data-skin="bao"],
+    body[data-skin="di"],
+    body[data-skin="zhen"]{
+      background:
+        linear-gradient(180deg, rgba(5,9,14,.46), rgba(5,9,14,.70)),
+        var(--skin-bg-image) center center / cover no-repeat,
+        var(--bg);
+    }
+
+    @media (min-width: 900px){
+      body[data-skin="bao"]{ --skin-bg-image: url("/bg-bao-desktop.avif"); }
+      body[data-skin="di"]{ --skin-bg-image: url("/bg-di-desktop.avif"); }
+      body[data-skin="zhen"]{ --skin-bg-image: url("/bg-zhen-desktop.avif"); }
+
+      #app.app{
+        padding: 16px 18px 18px !important;
+        gap: 12px !important;
+        transform: none !important;
+        transform-origin: initial !important;
+      }
+
+      .topbar{
+        margin: 0 !important;
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+      }
+      .chipRow{
+        min-height: 52px !important;
+        padding: 8px 10px !important;
+        gap: 7px !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-start !important;
+        align-content: center !important;
+        overflow: hidden !important;
+      }
+      .chip{
+        flex: 0 1 auto !important;
+        padding: 6px 10px !important;
+        gap: 6px !important;
+        font-size: 13px !important;
+      }
+      .chip b{ font-size: 13px !important; }
+      .chip .dot{ width: 8px !important; height: 8px !important; }
+
+      .btnRow{
+        width: clamp(420px, 36vw, 560px);
+        gap: 8px !important;
+        overflow: visible !important;
+      }
+      .btnRow > button{
+        min-width: 96px !important;
+        min-height: 46px !important;
+        padding: 10px 12px !important;
+        border-radius: 14px !important;
+        font-size: 15px !important;
+        line-height: 1.15 !important;
+      }
+
+      .main{
+        flex: 1 1 auto !important;
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) clamp(380px, 30vw, 520px) !important;
+        grid-template-rows: minmax(0, 1fr) !important;
+        align-items: stretch !important;
+        gap: 14px !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+      }
+
+      .boardArea.board-area{
+        width: 100% !important;
+        height: 100% !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        align-items: center !important;
+        justify-content: center !important;
+        overflow: hidden !important;
+      }
+      #board.board{
+        padding: 10px !important;
+        border-radius: 22px !important;
+      }
+      #grid{
+        gap: clamp(7px, .7vw, 11px) !important;
+        padding: clamp(7px, .8vw, 12px) !important;
+      }
+      .ringCell{
+        padding: 8px !important;
+        font-size: clamp(14px, 1.1vw, 18px) !important;
+      }
+      .ringCell .small{ font-size: 13px !important; }
+      .tile{
+        padding: clamp(8px, .8vw, 12px) !important;
+      }
+      .tile .name{
+        font-size: clamp(13px, 1vw, 16px) !important;
+        line-height: 1.15 !important;
+      }
+
+      .controls.bottom-area{
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 14px !important;
+        gap: 10px !important;
+        border-radius: 18px !important;
+      }
+      .controlsHeader{
+        gap: 8px !important;
+        overflow: visible !important;
+      }
+      .controlsHeader h3{
+        font-size: 18px !important;
+        line-height: 1.2 !important;
+      }
+      .skinHeader{
+        gap: 10px !important;
+      }
+      .skinHeader .skinTitle{
+        max-width: none !important;
+        font-size: 14px !important;
+      }
+      .controlsBtns{
+        gap: 8px !important;
+        overflow: visible !important;
+      }
+      .controlsBtns > button{
+        min-height: 44px !important;
+        padding: 9px 12px !important;
+        font-size: 15px !important;
+      }
+      .skinPickRow{
+        gap: 8px !important;
+        margin-bottom: 4px !important;
+      }
+      .skinPickRow button{
+        min-height: 44px !important;
+        padding: 9px 8px !important;
+        font-size: 15px !important;
+      }
+
+      .actionPanel{
+        min-height: 0 !important;
+      }
+      .actions{
+        gap: 12px !important;
+        overflow-y: auto !important;
+      }
+      .actions button{
+        min-height: 48px !important;
+        padding: 10px 12px !important;
+        font-size: 15px !important;
+      }
+      .actionBtn{
+        min-height: 88px !important;
+        padding: 14px !important;
+        border-radius: 15px !important;
+      }
+      .actionBtn .tag{ font-size: 13px !important; }
+      .actionBtn .title{
+        font-size: 18px !important;
+        line-height: 1.2 !important;
+      }
+      .actionBtn .meta{ font-size: 13px !important; }
+
+      .actionPanel .actionMode{
+        gap: 10px !important;
+        padding: 14px !important;
+        overflow-y: auto !important;
+      }
+      .actionPanel .actionMode .title{ font-size: 17px !important; }
+      .actionPanel .actionMode .hint{
+        font-size: 15px !important;
+        line-height: 1.4 !important;
+      }
+      .actionPanel .actionMode button{
+        min-height: 44px !important;
+        padding: 9px 12px !important;
+        font-size: 15px !important;
+      }
+
+      .log{
+        flex: 0 0 86px !important;
+        height: 86px !important;
+        max-height: 86px !important;
+        padding: 9px 11px !important;
+        overflow-y: auto !important;
+      }
+      .log .line{
+        font-size: 14px !important;
+        line-height: 1.35 !important;
+        padding: 2px 0 !important;
+      }
+
+      .overlay{
+        padding: 24px !important;
+      }
+      .overlay .sheet{
+        width: min(760px, 100%) !important;
+        max-height: calc(100vh - 48px) !important;
+        padding: 18px !important;
+        overflow-y: auto !important;
+      }
+      .sheet h2{ font-size: 20px !important; }
+      .sheet p{ font-size: 15px !important; }
+      .sheet p.hint{ font-size: 14px !important; }
+      .footerBtns button{
+        min-height: 44px !important;
+        font-size: 15px !important;
+      }
+    }
+  </style>
 </head>
 <body data-skin="classic">
 <div id="app" class="app">
@@ -1457,7 +1352,6 @@ body[data-skin="zhen"]{
     </div>
   </div>
 
-  <!-- In-flow overlay: pushes layout, never covers main content -->
   <div class="overlay hidden" id="overlay"></div>
 
   <div class="main">
@@ -1466,8 +1360,6 @@ body[data-skin="zhen"]{
         <div id="grid"></div>
       </div>
     </div>
-
-    
 
     <div class="controls bottom-area">
       <div class="controlsHeader">
@@ -1489,20 +1381,12 @@ body[data-skin="zhen"]{
   </div>
 </div>
 
-
-
 <script>
 /**
  * =========================
  * 1) 数据与常量
  * =========================
- * - GameState：完整游戏状态（含隐藏信息）
- * - Rules：纯规则逻辑（不碰 DOM）
- * - Actions：玩家行为（修改 GameState）
- * - Render：根据 GameState 刷新 UI
  */
-
-/** 9 名官方嫌疑人（已移除 Maybrick） */
 const SUSPECTS = [
   { id:"GULL",      name:"William Gull",      zh:"William Gull",      short:"GULL",      alibiHg:1 },
   { id:"PIZER",     name:"John Pizer",        zh:"John Pizer",        short:"PIZER",     alibiHg:1 },
@@ -1515,7 +1399,6 @@ const SUSPECTS = [
   { id:"BERT",      name:"Jeremy Bert",       zh:"Jeremy Bert",       short:"BERT",      alibiHg:1 },
 ];
 
-/** 行动 ID */
 const ACT = {
   ALIBI:"ALIBI",
   HOLMES:"HOLMES",
@@ -1526,7 +1409,6 @@ const ACT = {
   JOKER:"JOKER"
 };
 
-/** 行动 token 双面配对（4 枚） */
 const ACTION_TOKENS_DEF = [
   { id:0, sides:[ACT.ALIBI, ACT.HOLMES], side:0 },
   { id:1, sides:[ACT.DOG,   ACT.WATSON], side:0 },
@@ -1617,8 +1499,6 @@ function canSwitchSkin(){
   return GameState.phase==="SETUP" && !GameState.jack.identity;
 }
 
-
-/** 外圈 12 格，顺时针索引（0..11） */
 function detDir(pos){
   if (pos>=0 && pos<=2) return "S";
   if (pos>=3 && pos<=5) return "W";
@@ -1626,7 +1506,6 @@ function detDir(pos){
   return "E";
 }
 
-/** Fisher–Yates 洗牌 */
 function shuffle(arr){
   for(let i=arr.length-1;i>0;i--){
     const j = Math.floor(Math.random()*(i+1));
@@ -1648,29 +1527,21 @@ function nowStr(){
  * =========================
  */
 function createNewGameState(){
-// ===== Initial setup (street/district tiles) — follow real setup order =====
-// ① Randomize all street tiles positions
-// ② Randomize all street tiles orientations
-// ③ H faces which tile -> rotate its wall to face H
-// ④ W faces which tile -> rotate its wall to face W
-// ⑤ T faces which tile -> rotate its wall to face T
 const tiles = [];
 const suspects = SUSPECTS.map(s=>s.id);
 shuffle(suspects);
 
-// Step ①: create 9 tiles then shuffle to random positions
 const flat = [];
 let tid=1;
 for(let i=0;i<9;i++){
-  // baseWalls: [N,E,S,W] (wall at S when rot=0)
   const baseWalls=[0,0,1,0];
   flat.push({
     uid: tid++,
     suspectId: suspects[i],
     faceUp: true,
-    rot: 0,                // Step ② will randomize later
+    rot: 0,
     baseWalls,
-    barricade: [0,0,0,0],  // extra walls (none by default)
+    barricade: [0,0,0,0],
   });
 }
 shuffle(flat);
@@ -1682,79 +1553,70 @@ for(let r=0;r<3;r++){
   tiles.push(row);
 }
 
-// Step ②: randomize all street tiles orientations (after placement)
 for(let r=0;r<3;r++){
   for(let c=0;c<3;c++){
-    tiles[r][c].rot = Math.floor(Math.random() * 4); // 0..3
+    tiles[r][c].rot = Math.floor(Math.random() * 4);
   }
 }
 
-// Step ③-⑤: orientation correction (random first, then correct; strict facing)
-const INIT_DETECTIVES = { HOLMES:11, WATSON:3, TOBY:7 }; // clockwise numbering shown on UI
+const INIT_DETECTIVES = { HOLMES:11, WATSON:3, TOBY:7 };
 
 function _frontTileCoord(detPos){
   const dir = detDir(detPos);
-  // dir is the direction the detective faces into the board
-  if(dir==="S") return { r:0, c:detPos,      face:"N" };        // top ring -> tile's N side faces detective
-  if(dir==="W") return { r:detPos-3, c:2,    face:"E" };        // right ring -> tile's E side faces detective
-  if(dir==="N") return { r:2, c:8-detPos,    face:"S" };        // bottom ring -> tile's S side faces detective
-  return           { r:11-detPos, c:0,       face:"W" };        // left ring  -> tile's W side faces detective
+  if(dir==="S") return { r:0, c:detPos,      face:"N" };
+  if(dir==="W") return { r:detPos-3, c:2,    face:"E" };
+  if(dir==="N") return { r:2, c:8-detPos,    face:"S" };
+  return           { r:11-detPos, c:0,       face:"W" };
 }
 function _edgeIdx(face){ return face==="N"?0 : face==="E"?1 : face==="S"?2 : 3; }
 
 function _rotateWallToFace(detPos){
   const { r, c, face } = _frontTileCoord(detPos);
   const tile = tiles[r][c];
-
-  // Identify the "printed wall" in baseWalls (assumed one wall per tile)
   const baseWallIdx = tile.baseWalls.findIndex(v=>v===1);
-  const bw = (baseWallIdx >= 0) ? baseWallIdx : 2; // fallback to S if missing
+  const bw = (baseWallIdx >= 0) ? baseWallIdx : 2;
   const target = _edgeIdx(face);
-
-  // Set rot so that the printed wall points exactly to 'target'
   tile.rot = (target - bw + 4) % 4;
 }
 
-// Required correction order: H -> W -> T
 _rotateWallToFace(INIT_DETECTIVES.HOLMES);
 _rotateWallToFace(INIT_DETECTIVES.WATSON);
 _rotateWallToFace(INIT_DETECTIVES.TOBY);
   return {
     phase: "SETUP",
-    isResolvingEndRound: false, // Innocent FIX: end-round resolution lock          // SETUP | ACTION | WITNESS | GAME_OVER
-    turn: 1,                 // 1..8
-    step: 0,                 // 本回合第几次选择行动 (0..3)
-    pickerSeq: [PLAYER.INV, PLAYER.JACK, PLAYER.JACK, PLAYER.INV], // odd default
-    passHint: false,          // 是否弹出交接提示
-    raceMode: false,         // 同时达成 → 追逐模式
+    isResolvingEndRound: false,
+    turn: 1,
+    step: 0,
+    pickerSeq: [PLAYER.INV, PLAYER.JACK, PLAYER.JACK, PLAYER.INV],
+    passHint: false,
+    raceMode: false,
 
-    tiles,                   // 3x3
-    detectives: { HOLMES:11, WATSON:3, TOBY:7 }, // 默认：上中/右中/下中（可玩；如你有官方起始位可自行改）
+    tiles,
+    detectives: { HOLMES:11, WATSON:3, TOBY:7 },
     tokens: deepClone(ACTION_TOKENS_DEF),
     remainingTokenIds: [0,1,2,3],
     chosenTokenIds: [],
-    rotatedThisTurn: [],     // 记录本回合已旋转的 tile.uid（防止同回合旋同一张两次）
+    rotatedThisTurn: [],
 
-    // Alibi：开局 Jack 抽走 1 张作为身份，其余为牌库
     alibiDeck: [],
     jack: {
-      identity: null,        // {suspectId, alibiHg}
-      secretCards: [],       // Jack 抽到的 Alibi（隐藏）
-      secretHg: 0,           // Alibi 隐藏沙漏合计（隐藏）
-      publicHg: 0            // 回合 token 获得的沙漏（公开，= Jack 不可见拿 token 次数）
+      identity: null,
+      secretCards: [],
+      secretHg: 0,
+      publicHg: 0
     },
     inv: {
       takenTokens: 0
     },
 
     ui: {
-      overlay: null,         // {type, ...}
-      modal: null,           // (deprecated) 保留字段但不再用于行动交互
-      editWalls: false,      // 开局编辑墙
-      selected: null,        // {r,c} 当前选择格（编辑墙用）
-      exchangeFirst: null,   // 旧字段保留
-      actionMode: null,      // {tokenId, by, action, type, ...} 页面内 Action Mode
-      actionHint: null       // 轻提示（短暂显示）
+      overlay: null,
+      modal: null,
+      editWalls: false,
+      selected: null,
+      exchangeFirst: null,
+      actionMode: null,
+      actionHint: null
     },
 
     log: [`${nowStr()} 准备中：请让 ${skinJackName()} 抽身份后开始。`],
@@ -1765,7 +1627,7 @@ let GameState = createNewGameState();
 
 /**
  * =========================
- * 3) Rules（纯规则逻辑）
+ * 3) Rules
  * =========================
  */
 const Rules = {
@@ -1775,7 +1637,6 @@ const Rules = {
   tokenAction(token){
     return token.sides[token.side];
   },
-  // 奇数：随机掷出；偶数：翻面
   setupTokensForTurn(state){
     if(state.turn % 2 === 1){
       state.tokens.forEach(t => t.side = (Math.random()<0.5?0:1));
@@ -1789,15 +1650,12 @@ const Rules = {
     state.step = 0;
     state.rotatedThisTurn = [];
   },
-  // 计算 tile 当前朝向下的墙（N,E,S,W）
   rotatedWalls(tile){
-    // baseWalls 相对 rot=0；rot=1 表示顺时针 90
     const out=[0,0,0,0];
     for(let i=0;i<4;i++){
-      const idx = (i + tile.rot) % 4;  // base i 被旋到 idx
+      const idx = (i + tile.rot) % 4;
       out[idx] = tile.baseWalls[i] ? 1 : 0;
     }
-    // barricade 同样旋转（在本版本中当作额外墙）
     const b=[0,0,0,0];
     for(let i=0;i<4;i++){
       const idx=(i + tile.rot)%4;
@@ -1805,20 +1663,16 @@ const Rules = {
     }
     return out.map((v,i)=> (v||b[i])?1:0);
   },
-  // 两格相邻边是否被墙阻挡
   isBlockedBetween(state, r, c, dir){
-    // dir: "N/E/S/W" from tile (r,c) outward
     const tile = state.tiles[r][c];
     const w = Rules.rotatedWalls(tile);
     const idx = dir==="N"?0:dir==="E"?1:dir==="S"?2:3;
     if(w[idx]) return true;
 
-    // neighbor side wall
     const dr = dir==="N"?-1:dir==="S"?1:0;
     const dc = dir==="W"?-1:dir==="E"?1:0;
     const nr=r+dr, nc=c+dc;
     if(nr<0 || nr>2 || nc<0 || nc>2){
-      // 出界视为外侧无墙（侦探在外侧，若 tile 边无墙则可看进来）
       return false;
     }
     const nt = state.tiles[nr][nc];
@@ -1826,40 +1680,35 @@ const Rules = {
     const opp = dir==="N"?2:dir==="S"?0:dir==="E"?3:1;
     return !!nw[opp];
   },
-  // 给定侦探位置，返回他能“直线看见”的 tiles（按顺序）
   visibleLine(state, detPos){
     const dir = detDir(detPos);
     const tiles = [];
     let coords = [];
     if(dir==="S"){
-      const c = detPos; // 0..2
+      const c = detPos;
       coords = [[0,c],[1,c],[2,c]];
     }else if(dir==="N"){
-      const c = 8-detPos; // pos 6..8 -> c 2..0
+      const c = 8-detPos;
       coords = [[2,c],[1,c],[0,c]];
     }else if(dir==="W"){
-      const r = detPos-3; // 3..5 -> 0..2
+      const r = detPos-3;
       coords = [[r,2],[r,1],[r,0]];
-    }else{ // E
-      const r = 11-detPos; // 9..11 -> 2..0
+    }else{
+      const r = 11-detPos;
       coords = [[r,0],[r,1],[r,2]];
     }
 
-    // 从外侧进入第一格，需要检查第一格“面对外侧”的边是否有墙
     for(let i=0;i<coords.length;i++){
       const [r,c] = coords[i];
-      // 进入该格的方向（从外往内看，等价于 tile 的外侧边）
       let enterDir = null;
       if(dir==="S") enterDir = "N";
       if(dir==="N") enterDir = "S";
       if(dir==="W") enterDir = "E";
       if(dir==="E") enterDir = "W";
-      // 对第一格，检查外侧边墙；对后续格，检查上一格与该格之间的墙
       let blocked = false;
       if(i===0){
         blocked = Rules.isBlockedBetween(state, r, c, enterDir);
       }else{
-        // 上一格到该格的方向：与视线 dir 相反？（我们 coords 已按视线方向排列）
         const [pr,pc] = coords[i-1];
         let stepDir = null;
         if(pr===r-1 && pc===c) stepDir="S";
@@ -1873,7 +1722,6 @@ const Rules = {
     }
     return tiles;
   },
-  // 所有侦探可见 tiles 集合
   computeVisibleTiles(state){
     const set = new Set();
     const lines = {};
@@ -1885,7 +1733,6 @@ const Rules = {
     }
     return { set, lines };
   },
-  // 找到 Jack 身份所在 tile（一定 faceUp）
   findJackTile(state){
     if(!state.jack.identity) return null;
     const sid = state.jack.identity.suspectId;
@@ -1895,12 +1742,9 @@ const Rules = {
         if(t.faceUp && t.suspectId===sid) return {r,c};
       }
     }
-    // 理论上不会发生
     return null;
   },
-  // 目击阶段结算（翻嫌疑 + 分配回合 token + 胜负）
   applyWitness(state){
-    // Innocent FIX: only resolve during end-round witness
     if(state.phase!=="WITNESS" || !state.isResolvingEndRound){
       return { jackVisible:false, result:null };
     }
@@ -1910,7 +1754,6 @@ const Rules = {
 
     const beforeSus = Rules.countSuspects(state);
 
-    // 要翻掉的嫌疑人（不翻 Jack 自己）
     const toClear = [];
     for(let r=0;r<3;r++){
       for(let c=0;c<3;c++){
@@ -1919,8 +1762,6 @@ const Rules = {
         if(jackPos && r===jackPos.r && c===jackPos.c) continue;
 
         const seen = vis.set.has(r+","+c);
-        // Jack 可见：清“不可见”的嫌疑
-        // Jack 不可见：清“可见”的嫌疑
         if(jackVisible){
           if(!seen) toClear.push({r,c});
         }else{
@@ -1930,11 +1771,10 @@ const Rules = {
     }
     toClear.forEach(p => state.tiles[p.r][p.c].faceUp=false);
 
-    // 分配回合 token（公开）
     if(jackVisible){
       state.inv.takenTokens += 1;
     }else{
-      state.jack.publicHg += 1; // 回合 token 反面=1沙漏
+      state.jack.publicHg += 1;
     }
 
     const afterSus = Rules.countSuspects(state);
@@ -1942,26 +1782,21 @@ const Rules = {
     state.log.push(`${nowStr()} 目击：${skinJackName()} ${jackVisible ? "可见" : "不可见"}；翻掉${skinSuspectTerm()} ${toClear.length} 张（${beforeSus} → ${afterSus}）。`);
     state.log.push(`${nowStr()} 回合 token：${jackVisible ? skinInvName()+"获得" : skinJackName()+"获得(+1公开沙漏)"}。`);
 
-    // 胜负判定
     const result = Rules.checkWin(state, jackVisible);
     return { jackVisible, toClear, vis, result };
   },
-  // 当前剩余嫌疑人数（faceUp true）
   countSuspects(state){
     let n=0;
     for(let r=0;r<3;r++) for(let c=0;c<3;c++) if(state.tiles[r][c].faceUp) n++;
     return n;
   },
-  // Jack 总沙漏（隐藏+公开）
   jackTotalHg(state){
     return state.jack.publicHg + state.jack.secretHg;
   },
-  // 同时达成 / 追逐模式
   checkWin(state, jackVisibleNow){
     const suspectsLeft = Rules.countSuspects(state);
     const jackHg = Rules.jackTotalHg(state);
 
-    // 追逐模式：只看“是否被看到”与“是否到第8回合”
     if(state.raceMode){
       if(jackVisibleNow){
         return { over:true, winner: PLAYER.INV, reason:`追逐模式：${skinJackName()} 被看到` };
@@ -1976,12 +1811,9 @@ const Rules = {
     const jackWin = (jackHg>=6);
 
     if(invWin && jackWin){
-      // 同时达成
       if(state.turn>=8){
-        // 第8回合：看当回合目击 Jack 是否可见
         return { over:true, winner: jackVisibleNow ? PLAYER.INV : PLAYER.JACK, reason:"第8回合同步达成：按可见性裁决" };
       }else{
-        // 未到第8回合：若此刻已可见，则可视为追逐立刻结束；否则进入追逐模式
         if(jackVisibleNow){
           return { over:true, winner: PLAYER.INV, reason:`同步达成且当回合 ${skinJackName()} 可见：立即抓到` };
         }
@@ -1998,23 +1830,19 @@ const Rules = {
       return { over:true, winner: PLAYER.JACK, reason:`${skinJackName()} 沙漏 ≥ 6` };
     }
 
-    // 第8回合结束仍无人达成：默认 Jack 胜（成功逃脱）
     if(state.turn>=8){
       return { over:true, winner: PLAYER.JACK, reason:`第8回合结束仍未抓到：${skinJackName()} 逃脱` };
     }
     return { over:false };
   },
-  // 是否允许查看 Jack 私密信息（非随时可点的功能按钮，而是规则允许的“查看行为”）
   canViewJackSecret(state){
     if(state.phase==="GAME_OVER") return true;
-    if(state.phase==="SETUP") return !!state.jack.identity; // Jack 抽完身份后
+    if(state.phase==="SETUP") return !!state.jack.identity;
     if(state.phase==="ACTION"){
-      return Rules.currentPlayer(state)===PLAYER.JACK; // Jack 行动回合
+      return Rules.currentPlayer(state)===PLAYER.JACK;
     }
     return false;
   },
-
-  // 校验旋转同回合不重复
   canRotateTile(state, tileUid){
     return !state.rotatedThisTurn.includes(tileUid);
   }
@@ -2022,18 +1850,16 @@ const Rules = {
 
 /**
  * =========================
- * 4) Actions（修改 GameState）
+ * 4) Actions
  * =========================
  */
 const Actions = {
   pushOverlay(obj){ GameState.ui.overlay = obj; Render.render(); },
   closeOverlay(){ GameState.ui.overlay = null; Render.render(); },
 
-  // （deprecated）旧 modal 字段保留，但不再用于行动交互
   pushModal(obj){ GameState.ui.modal = obj; Render.render(); },
   closeModal(){ GameState.ui.modal = null; Render.render(); },
 
-  // 轻提示（不遮挡棋盘）
   hint(msg){
     GameState.ui.actionHint = msg;
     Render.render();
@@ -2046,7 +1872,6 @@ const Actions = {
   },
 
   enterActionMode(payload){
-    // payload: {tokenId, by, action, type, ...}
     GameState.ui.actionMode = payload;
     Render.render();
   },
@@ -2060,21 +1885,19 @@ const Actions = {
     Render.render();
   },
   cancelActionMode(){
-    // 不消耗 token，不改变棋盘，只退出 Action Mode
     if(GameState.ui.actionMode){
       Actions.hint("已取消行动（不消耗 token）");
     }
     Actions.exitActionMode();
   },
 
-  // 在行动真正执行时才消耗 token（保证取消不消耗）
   commitToken(){
     const am = GameState.ui.actionMode;
     if(!am) return;
     const tokenId = am.tokenId;
     const by = am.by;
     const action = am.action;
-    if(!GameState.remainingTokenIds.includes(tokenId)) return; // already committed
+    if(!GameState.remainingTokenIds.includes(tokenId)) return;
 
     GameState.remainingTokenIds = GameState.remainingTokenIds.filter(x=>x!==tokenId);
     GameState.chosenTokenIds.push(tokenId);
@@ -2100,7 +1923,6 @@ const Actions = {
     Render.render();
   },
 
-  // 开局：Jack 抽身份（从9嫌疑 Alibi 中抽走1张）
   jackDrawIdentity(){
     if(GameState.phase !== "SETUP") return;
     const deck = SUSPECTS.map(s => ({ suspectId:s.id, hg: s.alibiHg }));
@@ -2112,15 +1934,12 @@ const Actions = {
     GameState.jack.secretHg = 0;
     GameState.jack.publicHg = 0;
     Actions.log(`${skinJackName()} 已抽取身份牌（已隐藏）。Alibi 牌库剩余 ${GameState.alibiDeck.length} 张。`);
-
-    // 让 Jack 私密查看身份
     Actions.pushOverlay({
       type:"JACK_IDENTITY",
       step: "REVEAL"
     });
   },
 
-  // 开始第一回合
   startGame(){
     if(!GameState.jack.identity){
       Actions.pushOverlay({ type:"INFO", title:"还没抽身份", text:`请先让 ${skinJackName()} 点击“抽身份牌”。` });
@@ -2145,18 +1964,16 @@ const Actions = {
     Render.render();
   },
 
-  // 选择一个行动 token 执行
   pickAction(tokenId){
     if(GameState.phase !== "ACTION") return;
     const cur = Rules.currentPlayer(GameState);
     if(!cur) return;
-    if(GameState.ui.actionMode) return; // Action Mode 中禁止改选其他 token
+    if(GameState.ui.actionMode) return;
     if(!GameState.remainingTokenIds.includes(tokenId)) return;
 
     const token = GameState.tokens.find(t=>t.id===tokenId);
     const action = Rules.tokenAction(token);
 
-    // 进入页面内 Action Mode（不弹窗，不立刻消耗 token）
     const am = { tokenId, by: cur, action, type:"GENERIC" };
 
     if(action===ACT.HOLMES || action===ACT.WATSON || action===ACT.DOG){
@@ -2167,16 +1984,14 @@ const Actions = {
       am.allowSkip = (cur===PLAYER.JACK);
     }else if(action===ACT.ROTATE){
       am.type = "ROTATE";
-      // 旋转三阶段：先选牌 -> 选旋转 -> 确认（仅预览，不立即改 GameState.rot）
-      am.target = null;     // {r,c}
-      am.baseRot = null;    // 原始 rot
-      am.previewRot = null; // 预览 rot
-      am.chosenDeg = null;  // 90/180/-90
+      am.target = null;
+      am.baseRot = null;
+      am.previewRot = null;
+      am.chosenDeg = null;
     }else if(action===ACT.EXCHANGE){
       am.type = "SWAP";
-      // 交换：先选两张 -> 预览 -> 确认
-      am.first = null;  // {r,c}
-      am.second = null; // {r,c}
+      am.first = null;
+      am.second = null;
     }else if(action===ACT.ALIBI){
       am.type = "ALIBI";
     }
@@ -2185,11 +2000,9 @@ const Actions = {
   },
 
   executeAction(by, action){
-    // 已改为 Action Mode：不再弹 modal；此函数保留以兼容旧调用（当前不会被使用）
     Actions.advanceStep();
   },
 
-  // 执行移动
   doMove(det, steps){
     const curPos = GameState.detectives[det];
     const newPos = (curPos + steps) % 12;
@@ -2200,7 +2013,6 @@ const Actions = {
     Actions.advanceStep();
   },
 
-  // Joker：选择侦探 +（若Jack）可不动
   doJoker(det, moved){
     if(moved){
       Actions.doMove(det, 1);
@@ -2212,7 +2024,6 @@ const Actions = {
     }
   },
 
-  // 旋转：选择 tile + 角度
   rotatePick(r,c){
     const tile = GameState.tiles[r][c];
     if(!Rules.canRotateTile(GameState, tile.uid)){
@@ -2238,8 +2049,6 @@ const Actions = {
     Actions.advanceStep();
   },
 
-  // 交换：Action Mode 下依次点击两张街区牌完成交换
-  // 旋转：三阶段（选牌 -> 选旋转 -> 确认）。前两步只做 UI 预览，不写入 GameState.rot
   rotatePickTile(r,c){
     const am = GameState.ui.actionMode;
     if(!am || am.type!=="ROTATE") return;
@@ -2259,7 +2068,7 @@ const Actions = {
       return;
     }
     am.chosenDeg = deg;
-    const delta = deg===90 ? 1 : deg===180 ? 2 : 3; // -90 => +3
+    const delta = deg===90 ? 1 : deg===180 ? 2 : 3;
     am.previewRot = (am.baseRot + delta) % 4;
     Render.render();
   },
@@ -2276,7 +2085,6 @@ const Actions = {
     }
     const {r,c} = am.target;
     const tile = GameState.tiles[r][c];
-    // 只在确认时做规则判定
     if(!Rules.canRotateTile(GameState, tile.uid)){
       Actions.hint("该街区牌本回合已旋转过（无法确认）");
       return;
@@ -2284,7 +2092,6 @@ const Actions = {
     Actions.doRotate(r,c, am.chosenDeg);
   },
 
-  // 交换：选两张 -> 预览 -> 确认（预览不写入 GameState）
   exchangePick(r,c){
     const am = GameState.ui.actionMode;
     if(!am || am.type!=="SWAP") return;
@@ -2296,7 +2103,6 @@ const Actions = {
       Render.render();
       return;
     }
-    // 已有 first
     if(!am.second){
       if(am.first.r===r && am.first.c===c){
         Actions.hint("请选不同的两张牌");
@@ -2307,7 +2113,6 @@ const Actions = {
       Render.render();
       return;
     }
-    // 已有两张：允许重选第2张（便于快速调整）
     if(am.first.r===r && am.first.c===c){
       am.second = null;
       Actions.hint("已取消第2张选择：请重新选择第2张");
@@ -2332,7 +2137,6 @@ const Actions = {
     }
     const t1 = GameState.tiles[a.r][a.c];
     const t2 = GameState.tiles[b.r][b.c];
-    // 确认时才正式提交交换 + 消耗 token
     Actions.commitToken();
     GameState.tiles[a.r][a.c] = t2;
     GameState.tiles[b.r][b.c] = t1;
@@ -2341,7 +2145,6 @@ const Actions = {
     Actions.advanceStep();
   },
 
-  // Alibi
   doAlibi(by){
     Actions.commitToken();
     Actions.exitActionMode();
@@ -2355,12 +2158,10 @@ const Actions = {
     const hg = card.hg;
 
     if(by===PLAYER.INV){
-      // 公开
       Actions.pushOverlay({
         type:"ALIBI_REVEAL_INV",
         sid, hg
       });
-      // 翻掉该嫌疑人（若仍在场）
       for(let r=0;r<3;r++){
         for(let c=0;c<3;c++){
           const t=GameState.tiles[r][c];
@@ -2372,7 +2173,6 @@ const Actions = {
       Actions.log(`${skinInvName()}公开 Alibi：${Render.suspectName(sid)}（沙漏${hg}，公开无加分）→ 若在场则洗清。`);
       return;
     }else{
-      // Jack 私密：加入隐藏沙漏
       GameState.jack.secretCards.push(card);
       GameState.jack.secretHg += hg;
       Actions.pushOverlay({
@@ -2384,11 +2184,8 @@ const Actions = {
     }
   },
 
-  // 推进到下一次行动 / 或进入目击
   advanceStep(){
-    // 行动结束时确保退出 Action Mode
     GameState.ui.actionMode = null;
-    // 行动结束，步数+1
     GameState.step += 1;
 
     if(GameState.step>=4){
@@ -2398,7 +2195,6 @@ const Actions = {
       return;
     }
 
-    // 交接提示
     const next = Rules.currentPlayer(GameState);
     if(GameState.passHint){
       Actions.pushOverlay({ type:"PASS", who: next });
@@ -2407,14 +2203,11 @@ const Actions = {
     }
   },
 
-  // 目击阶段按钮
   doWitness(){
     if(GameState.phase!=="WITNESS") return;
 
-    // Innocent FIX: open end-round resolution lock
     GameState.isResolvingEndRound = true;
     const { jackVisible, result } = Rules.applyWitness(GameState);
-    // Innocent FIX: close lock immediately
     GameState.isResolvingEndRound = false;
     if(result && result.over){
       GameState.phase = "GAME_OVER";
@@ -2429,7 +2222,6 @@ const Actions = {
       return;
     }
 
-    // 继续下一回合
     GameState.turn += 1;
     GameState.phase = "ACTION";
     Rules.setupTokensForTurn(GameState);
@@ -2441,7 +2233,6 @@ const Actions = {
     }
   },
 
-  // 开局编辑墙：点 tile 边开关（写入 tile.baseWalls/barricade）
   toggleEditWalls(){
     if(GameState.phase!=="SETUP"){
       Actions.pushOverlay({ type:"INFO", title:"只能开局编辑", text:"为保证对局公平，编辑墙仅允许在开局 SETUP 阶段。" });
@@ -2452,19 +2243,15 @@ const Actions = {
     Render.render();
   },
 
-  // 设置选中 tile
   selectTile(r,c){
     GameState.ui.selected = {r,c};
     Render.render();
   },
 
-  // 在编辑墙模式下切换某边墙（相对当前朝向）
   toggleWallOnSelected(edgeIdx, isBarricade){
     const sel = GameState.ui.selected;
     if(!sel) return;
     const tile = GameState.tiles[sel.r][sel.c];
-    // edgeIdx 是相对当前方向 N/E/S/W => 0..3
-    // baseWalls 存的是 rot=0，需把当前边反旋回去
     const baseIdx = (edgeIdx - tile.rot + 4) % 4;
     if(isBarricade){
       tile.barricade[baseIdx] = tile.barricade[baseIdx] ? 0 : 1;
@@ -2474,7 +2261,6 @@ const Actions = {
     Render.render();
   },
 
-  // 允许调 Alibi 沙漏（仅开局）
   setSuspectHg(sid, delta){
     if(GameState.phase!=="SETUP") return;
     const s = SUSPECTS.find(x=>x.id===sid);
@@ -2487,35 +2273,21 @@ const Actions = {
 
 /**
  * =========================
- * 5) Render（DOM 渲染）
+ * 5) Render
  * =========================
- */
-
-/**
- * =========================
- * UI: 全量同步“可见高亮”（禁止事件驱动）
- * =========================
- * 规则：
- * - 只根据当前状态（含预览状态）计算
- * - 仅当 faceUp===true 且 isVisible===true 才高亮
- * - 每次渲染后全量刷新，避免残留旧高亮
  */
 function syncCardHighlight(){
-  // 1) 基于当前 GameState 生成“用于可见性计算”的预览态（不改游戏逻辑，只做 UI 视图）
   const st = GameState;
   const am = st && st.ui ? st.ui.actionMode : null;
 
-  // shallow copy grid; tiles are objects
   const tiles = st.tiles.map(row => row.slice());
 
-  // ROTATE 预览：用 previewRot 临时替代 rot（不写回原 tile）
   if(am && am.type==="ROTATE" && am.target && am.previewRot!=null){
     const {r,c} = am.target;
     const t = tiles[r][c];
     tiles[r][c] = Object.assign({}, t, { rot: am.previewRot });
   }
 
-  // SWAP 预览：临时交换两张牌（不写回原 GameState.tiles）
   if(am && am.type==="SWAP" && am.first && am.second){
     const a = am.first, b = am.second;
     const ta = tiles[a.r][a.c];
@@ -2525,12 +2297,9 @@ function syncCardHighlight(){
   }
 
   const previewState = Object.assign({}, st, { tiles });
-
-  // 2) 计算可见集合（按格子坐标）
   const vis = Rules.computeVisibleTiles(previewState);
   const visSet = vis && vis.set ? vis.set : new Set();
 
-  // 3) 建立 uid -> card 映射，并写入 card.isVisible（仅 UI 字段）
   const byId = new Map();
   for(let r=0;r<3;r++){
     for(let c=0;c<3;c++){
@@ -2538,16 +2307,12 @@ function syncCardHighlight(){
       if(!card) continue;
       card.isVisible = (card.faceUp === true) && visSet.has(`${r},${c}`);
       byId.set(String(card.uid), card);
-
-      // 调试：确认每张牌可见状态
-      console.log(Render.suspectName(card.suspectId), card.isVisible);
     }
   }
 
-  // 4) 全量同步 DOM 高亮（禁止 onclick 里加 class）
   document.querySelectorAll(".card").forEach(cardEl => {
     const id = cardEl.dataset.id;
-    const card = byId.get(String(id)); // 使用项目真实数据源（由状态推导）
+    const card = byId.get(String(id));
     if(card && card.isVisible === true){
       cardEl.classList.add("card-visible");
     }else{
@@ -2586,7 +2351,6 @@ const Render = {
     if(name.includes("<br")) return name;
     const parts = String(name).split(/\s+/).filter(Boolean);
     if(parts.length<=1) return String(name);
-    // try split near half of total characters (including spaces)
     const joined = parts.join(" ");
     const half = Math.floor(joined.length/2);
     let bestIdx = 0;
@@ -2599,7 +2363,7 @@ const Render = {
         bestDist = dist;
         bestIdx = i+1;
       }
-      pos += 1; // space
+      pos += 1;
     }
     const a = parts.slice(0,bestIdx).join(" ");
     const b = parts.slice(bestIdx).join(" ");
@@ -2609,15 +2373,12 @@ const Render = {
   tileLabel(tile){
     return tile.faceUp ? Render.suspectName(tile.suspectId) : "Empty";
   },
-  // 状态条
+
   renderStatus(){
     const el = document.getElementById("statusRow");
-
-    // 顶部按钮区：同步 passHint 按钮文案
     const btnPassHint = document.getElementById("btnPassHint");
     if(btnPassHint) btnPassHint.textContent = GameState.passHint ? "交接(开)" : "交接(关)";
     const cur = Rules.currentPlayer(GameState);
-    // Jack 私密按钮：仅在规则允许时显示/可用
     const btnSecret = document.getElementById("btnJackSecret");
     btnSecret.textContent = `${Render.jackName()} 私密`;
     const allowSecret = (GameState.phase==="ACTION" && Rules.currentPlayer(GameState)===PLAYER.JACK);
@@ -2647,149 +2408,137 @@ const Render = {
       <span class="chip"><b>alibi</b>${alibiLeft}</span>
       ${race}
     `;
-},
+  },
 
-renderActionMode(){
-  const box = document.getElementById("actionMode");
-  const am = GameState.ui.actionMode;
+  renderActionMode(){
+    const box = document.getElementById("actionMode");
+    const am = GameState.ui.actionMode;
 
-  console.log("render action mode", am);
+    box.style.display = am ? "block" : "none";
 
-  // 默认隐藏；有行动时显示（避免 CSS display:none / transform 造成不可见）
-  box.style.display = am ? "block" : "none";
+    if(!am){
+      box.classList.add("placeholder");
+      box.innerHTML="";
+      return;
+    }
+    box.classList.remove("placeholder");
 
-  if(!am){
-    box.classList.add("placeholder");
-    box.innerHTML="";
-    return;
-  }
-  box.classList.remove("placeholder");
+    const hintMsg = GameState.ui.actionHint ? `<span class="amNote">（${GameState.ui.actionHint}）</span>` : "";
+    const cancelBtn = `<button class="ghost" id="amCancel">取消</button>`;
 
-  const hintMsg = GameState.ui.actionHint ? `<span class="amNote">（${GameState.ui.actionHint}）</span>` : "";
-  const cancelBtn = `<button class="ghost" id="amCancel">取消</button>`;
+    if(am.type==="MOVE"){
+      const detName = Render.detName(am.det);
+      box.innerHTML = `
+        <div class="hint">选择移动 ${detName} 的步数 ${hintMsg}</div>
+        <div class="row">
+          <button class="primary" id="amMv1">1 格</button>
+          <button class="primary" id="amMv2">2 格</button>
+          ${cancelBtn}
+        </div>
+      `;
+      document.getElementById("amMv1").onclick=()=>Actions.doMove(am.det,1);
+      document.getElementById("amMv2").onclick=()=>Actions.doMove(am.det,2);
+      document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
+      return;
+    }
 
-  if(am.type==="MOVE"){
-    const detName = Render.detName(am.det);
+    if(am.type==="JOKER"){
+      const allowSkip = !!am.allowSkip;
+      box.innerHTML = `
+        <div class="hint">选择要移动的侦探（顺时针 1 格）${allowSkip?"，或选择不动":""} ${hintMsg}</div>
+        <div class="row">
+          <button class="primary" id="amJH">${Render.detName("HOLMES")}</button>
+          <button class="primary" id="amJW">${Render.detName("WATSON")}</button>
+          <button class="primary" id="amJT">${Render.detName("TOBY")}</button>
+          ${allowSkip?`<button class="ghost" id="amSkip">不移动</button>`:""}
+          ${cancelBtn}
+        </div>
+      `;
+      document.getElementById("amJH").onclick=()=>Actions.doJoker("HOLMES", true);
+      document.getElementById("amJW").onclick=()=>Actions.doJoker("WATSON", true);
+      document.getElementById("amJT").onclick=()=>Actions.doJoker("TOBY", true);
+      if(allowSkip) document.getElementById("amSkip").onclick=()=>Actions.doJoker("HOLMES", false);
+      document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
+      return;
+    }
+
+    if(am.type==="ROTATE"){
+      const picked = am.target ? `已选：(${am.target.r+1},${am.target.c+1})` : "请先点棋盘选一张牌";
+      const disableAngle = !am.target;
+      const canConfirm = !!am.target && am.chosenDeg!==null;
+      const disAttr = disableAngle ? 'style="pointer-events:none; opacity:.55;"' : '';
+      const confirmBtn = `<button class="${canConfirm?"primary":"ghost"}" id="amConfirm" ${canConfirm?"":'style="pointer-events:none; opacity:.55;"'}>确认</button>`;
+      box.innerHTML = `
+        <div class="hint">选择一张牌进行旋转</div>
+        <div class="hint" style="margin-top:6px;">${picked}</div>
+        <div class="row">
+          <button class="${am.chosenDeg===90?"primary":"ghost"}" id="amR90" ${disAttr}>↻90°</button>
+          <button class="${am.chosenDeg===180?"primary":"ghost"}" id="amR180" ${disAttr}>180°</button>
+          <button class="${am.chosenDeg===-90?"primary":"ghost"}" id="amR_90" ${disAttr}>↺90°</button>
+          ${confirmBtn}
+          ${cancelBtn}
+        </div>
+      `;
+      document.getElementById("amR90").onclick=()=>Actions.rotatePreview(90);
+      document.getElementById("amR180").onclick=()=>Actions.rotatePreview(180);
+      document.getElementById("amR_90").onclick=()=>Actions.rotatePreview(-90);
+      document.getElementById("amConfirm").onclick=()=>Actions.confirmRotate();
+      document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
+      return;
+    }
+
+    if(am.type==="SWAP"){
+      const picked1 = am.first ? `第1张：(${am.first.r+1},${am.first.c+1})` : "第1张：未选";
+      const picked2 = am.second ? `第2张：(${am.second.r+1},${am.second.c+1})` : "第2张：未选";
+      const hint = !am.first ? "选择两张牌交换位置" : (!am.second ? "选择第二张牌" : "确认交换");
+      const canConfirm = !!am.first && !!am.second;
+      const confirmBtn = `<button class="${canConfirm?"primary":"ghost"}" id="amConfirm" ${canConfirm?"":'style="pointer-events:none; opacity:.55;"'}>确认</button>`;
+      box.innerHTML = `
+        <div class="hint">${hint}</div>
+        <div class="hint" style="margin-top:6px;">${picked1}　${picked2}</div>
+        <div class="row">
+          ${confirmBtn}
+          ${cancelBtn}
+        </div>
+      `;
+      document.getElementById("amConfirm").onclick=()=>Actions.confirmSwap();
+      document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
+      return;
+    }
+
+    if(am.type==="ALIBI"){
+      box.innerHTML = `
+        <div class="hint">抽一张牌并结算 ${hintMsg}</div>
+        <div class="row">
+          <button class="primary" id="amDoAlibi">抽牌</button>
+          ${cancelBtn}
+        </div>
+      `;
+      document.getElementById("amDoAlibi").onclick=()=>Actions.doAlibi(am.by);
+      document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
+      return;
+    }
+
     box.innerHTML = `
-      <div class="hint">选择移动 ${detName} 的步数 ${hintMsg}</div>
-      <div class="row">
-        <button class="primary" id="amMv1">1 格</button>
-        <button class="primary" id="amMv2">2 格</button>
-        ${cancelBtn}
-      </div>
+      <div class="hint">${GameState.ui.actionHint || "进行中"} </div>
+      <div class="row">${cancelBtn}</div>
     `;
-    document.getElementById("amMv1").onclick=()=>Actions.doMove(am.det,1);
-    document.getElementById("amMv2").onclick=()=>Actions.doMove(am.det,2);
     document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
-    return;
-  }
+  },
 
-  if(am.type==="JOKER"){
-    const allowSkip = !!am.allowSkip;
-    box.innerHTML = `
-      <div class="hint">选择要移动的侦探（顺时针 1 格）${allowSkip?"，或选择不动":""} ${hintMsg}</div>
-      <div class="row">
-        <button class="primary" id="amJH">${Render.detName("HOLMES")}</button>
-        <button class="primary" id="amJW">${Render.detName("WATSON")}</button>
-        <button class="primary" id="amJT">${Render.detName("TOBY")}</button>
-        ${allowSkip?`<button class="ghost" id="amSkip">不移动</button>`:""}
-        ${cancelBtn}
-      </div>
-    `;
-    document.getElementById("amJH").onclick=()=>Actions.doJoker("HOLMES", true);
-    document.getElementById("amJW").onclick=()=>Actions.doJoker("WATSON", true);
-    document.getElementById("amJT").onclick=()=>Actions.doJoker("TOBY", true);
-    if(allowSkip) document.getElementById("amSkip").onclick=()=>Actions.doJoker("HOLMES", false);
-    document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
-    return;
-  }
-
-  if(am.type==="ROTATE"){
-    const picked = am.target ? `已选：(${am.target.r+1},${am.target.c+1})` : "请先点棋盘选一张牌";
-    const disableAngle = !am.target;
-    const canConfirm = !!am.target && am.chosenDeg!==null;
-    const disAttr = disableAngle ? 'style="pointer-events:none; opacity:.55;"' : '';
-    const confirmBtn = `<button class="${canConfirm?"primary":"ghost"}" id="amConfirm" ${canConfirm?"":'style="pointer-events:none; opacity:.55;"'}>确认</button>`;
-    box.innerHTML = `
-      <div class="hint">选择一张牌进行旋转</div>
-      <div class="hint" style="margin-top:6px;">${picked}</div>
-      <div class="row">
-        <button class="${am.chosenDeg===90?"primary":"ghost"}" id="amR90" ${disAttr}>↻90°</button>
-        <button class="${am.chosenDeg===180?"primary":"ghost"}" id="amR180" ${disAttr}>180°</button>
-        <button class="${am.chosenDeg===-90?"primary":"ghost"}" id="amR_90" ${disAttr}>↺90°</button>
-        ${confirmBtn}
-        ${cancelBtn}
-      </div>
-    `;
-    document.getElementById("amR90").onclick=()=>Actions.rotatePreview(90);
-    document.getElementById("amR180").onclick=()=>Actions.rotatePreview(180);
-    document.getElementById("amR_90").onclick=()=>Actions.rotatePreview(-90);
-    document.getElementById("amConfirm").onclick=()=>Actions.confirmRotate();
-    document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
-    return;
-  }
-
-  if(am.type==="SWAP"){
-    const picked1 = am.first ? `第1张：(${am.first.r+1},${am.first.c+1})` : "第1张：未选";
-    const picked2 = am.second ? `第2张：(${am.second.r+1},${am.second.c+1})` : "第2张：未选";
-    const hint = !am.first ? "选择两张牌交换位置" : (!am.second ? "选择第二张牌" : "确认交换");
-    const canConfirm = !!am.first && !!am.second;
-    const confirmBtn = `<button class="${canConfirm?"primary":"ghost"}" id="amConfirm" ${canConfirm?"":'style="pointer-events:none; opacity:.55;"'}>确认</button>`;
-    box.innerHTML = `
-      <div class="hint">${hint}</div>
-      <div class="hint" style="margin-top:6px;">${picked1}　${picked2}</div>
-      <div class="row">
-        ${confirmBtn}
-        ${cancelBtn}
-      </div>
-    `;
-    document.getElementById("amConfirm").onclick=()=>Actions.confirmSwap();
-    document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
-    return;
-  }
-
-  if(am.type==="ALIBI"){
-    box.innerHTML = `
-      <div class="hint">抽一张牌并结算 ${hintMsg}</div>
-      <div class="row">
-        <button class="primary" id="amDoAlibi">抽牌</button>
-        ${cancelBtn}
-      </div>
-    `;
-    document.getElementById("amDoAlibi").onclick=()=>Actions.doAlibi(am.by);
-    document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
-    return;
-  }
-
-  // fallback
-  box.innerHTML = `
-    <div class="hint">${GameState.ui.actionHint || "进行中"} </div>
-    <div class="row">${cancelBtn}</div>
-  `;
-  document.getElementById("amCancel").onclick=()=>Actions.cancelActionMode();
-},
-
-  // 5x5 网格：外圈+3x3 tile
   renderGrid(){
     const grid = document.getElementById("grid");
     const cells = [];
-    // 5x5 index helper
     function pushCell(html, cls, data=""){
       cells.push(`<div class="${cls}" ${data}>${html}</div>`);
     }
 
-    // map ring positions to 5x5 coords
-    // top ring: (0,1)(0,2)(0,3) => pos 0,1,2
-    // right ring: (1,4)(2,4)(3,4) => pos 3,4,5
-    // bottom ring: (4,3)(4,2)(4,1) => pos 6,7,8
-    // left ring: (3,0)(2,0)(1,0) => pos 9,10,11
     const ringAt = {};
     ringAt["0,1"]=0; ringAt["0,2"]=1; ringAt["0,3"]=2;
     ringAt["1,4"]=3; ringAt["2,4"]=4; ringAt["3,4"]=5;
     ringAt["4,3"]=6; ringAt["4,2"]=7; ringAt["4,1"]=8;
     ringAt["3,0"]=9; ringAt["2,0"]=10; ringAt["1,0"]=11;
 
-    // detective markers on ring positions. If multiple, show with "/".
     const detMark = {};
     for(const det of ["HOLMES","WATSON","TOBY"]){
       const pos = GameState.detectives[det];
@@ -2801,26 +2550,20 @@ renderActionMode(){
       return m.join("/");
     }
 
-    // 街区牌渲染规则：只显示「名字(仅 faceUp=true)」与「墙」。不显示 rot/可见性/排除标记等。
-
-    // build 5x5
     let idx=0;
     for(let gr=0;gr<5;gr++){
       for(let gc=0;gc<5;gc++){
-        // center 3x3: tiles at (1..3,1..3)
         if(gr>=1 && gr<=3 && gc>=1 && gc<=3){
           const r=gr-1, c=gc-1;
           const am = GameState.ui.actionMode;
           const tile = GameState.tiles[r][c];
 
-          // UI 预览：交换预览（仅渲染层互换，不写入 GameState）
           let dispTile = tile;
           if(am && am.type==="SWAP" && am.first && am.second){
             if(am.first.r===r && am.first.c===c) dispTile = GameState.tiles[am.second.r][am.second.c];
             else if(am.second.r===r && am.second.c===c) dispTile = GameState.tiles[am.first.r][am.first.c];
           }
 
-          // UI 预览：旋转预览（仅渲染层使用 previewRot，不写入 GameState）
           let effRot = dispTile.rot;
           if(am && am.type==="ROTATE" && am.target && am.target.r===r && am.target.c===c && am.previewRot!==null){
             effRot = am.previewRot;
@@ -2835,7 +2578,6 @@ renderActionMode(){
 
           const nm = dispTile.faceUp ? Render.nameTwoLines(Render.suspectName(dispTile.suspectId)) : "";
           let cls = "tile card";
-          // highlight is synced from state via syncCardHighlight()
           if(am && am.type==="ROTATE" && am.target && am.target.r===r && am.target.c===c) cls += " rotPreview";
           if(am && am.type==="SWAP"){
             if(am.first && am.first.r===r && am.first.c===c) cls += " swapPick1";
@@ -2845,7 +2587,6 @@ renderActionMode(){
             <div class="name">${nm}</div>
           `, cls, `data-id="${dispTile.uid}" data-tile="${r},${c}" style="${bTop}${bRight}${bBot}${bLeft}"`);
         }else{
-          // ring or empty
           const key = gr+","+gc;
           if(ringAt[key]!==undefined){
             const pos = ringAt[key];
@@ -2864,103 +2605,102 @@ renderActionMode(){
     grid.innerHTML = cells.join("");
   },
 
-renderActions(){
-  const actionsEl = document.getElementById("actions");
-  const titleEl = document.getElementById("panelTitle");
-  const skinHeader = document.getElementById("skinHeader");
-  const btnWitness = document.getElementById("btnWitness");
-  const btnEditWalls = document.getElementById("btnEditWalls");
+  renderActions(){
+    const actionsEl = document.getElementById("actions");
+    const titleEl = document.getElementById("panelTitle");
+    const skinHeader = document.getElementById("skinHeader");
+    const btnWitness = document.getElementById("btnWitness");
+    const btnEditWalls = document.getElementById("btnEditWalls");
 
-  if(skinHeader){
-    skinHeader.style.display = "none";
-    skinHeader.innerHTML = "";
-  }
-
-  if(btnEditWalls){
-    // 禁用/隐藏：不提供“开局编辑墙”入口（保留数据结构与规则逻辑，不删除）
-    btnEditWalls.style.display = "none";
-    btnEditWalls.disabled = true;
-  }
-
-  // 阶段按钮文案（更短）
-  if(btnWitness) btnWitness.textContent = "目击阶段";
-
-  if(GameState.phase==="ACTION"){
-    const who = Rules.currentPlayer(GameState);
-    titleEl.textContent = `行动 ${GameState.step+1}/4 · ${skinActorName(who)}`;
-    btnWitness.disabled = true;
-
-    const opts = GameState.tokens.map(t=>{
-      const act = Rules.tokenAction(t);
-      return { tokenId: t.id, act };
-    });
-    const locked = !!GameState.ui.actionMode;
-
-    const html = opts.map(o=>{
-      const used = !GameState.remainingTokenIds.includes(o.tokenId);
-      const disabled = used || locked;
-      let btnText = Render.actName(o.act);
-      // Jack行动时，ALIBI按钮显示双行提示
-      if(o.act === ACT.ALIBI && who === PLAYER.JACK && !disabled){
-        btnText = "抽牌<br><span style='font-size:10px;font-weight:normal;'>请确保${skinInvName()}不在屏幕</span>";
-      }
-      return `
-        <div class="actionBtn ${(disabled)?"used":""}" data-action="${o.tokenId}" ${(disabled)?"style=\"pointer-events:none;\"":""}>
-          <div class="title">${btnText}</div>
-        </div>
-      `;
-    }).join("");
-    actionsEl.innerHTML = html;
-    return;
-  }
-
-  if(GameState.phase==="WITNESS"){
-    titleEl.textContent = "目击阶段";
-    btnWitness.disabled = false;
-    actionsEl.innerHTML = "";
-    return;
-  }
-
-  if(GameState.phase==="SETUP"){
-    btnWitness.disabled = true;
-    titleEl.textContent = "开局设置";
-    const hasId = !!GameState.jack.identity;
-
-    if(skinHeader && !hasId){
-      skinHeader.style.display = "flex";
-      skinHeader.innerHTML = `<div class="skinTitle">皮肤：${activeSkin().label}（仅身份牌前可切换）</div>`;
+    if(skinHeader){
+      skinHeader.style.display = "none";
+      skinHeader.innerHTML = "";
     }
 
-    const skinBtns = !hasId ? `
-      <div class="skinPickRow">
-        ${Object.keys(SKINS).map(k=>`<button class="${k===currentSkinKey?"primary":"ghost"}" data-skin="${k}">${SKINS[k].label}</button>`).join("")}
-      </div>
-    ` : "";
+    if(btnEditWalls){
+      btnEditWalls.style.display = "none";
+      btnEditWalls.disabled = true;
+    }
 
+    if(btnWitness) btnWitness.textContent = "目击阶段";
+
+    if(GameState.phase==="ACTION"){
+      const who = Rules.currentPlayer(GameState);
+      titleEl.textContent = `行动 ${GameState.step+1}/4 · ${skinActorName(who)}`;
+      btnWitness.disabled = true;
+
+      const opts = GameState.tokens.map(t=>{
+        const act = Rules.tokenAction(t);
+        return { tokenId: t.id, act };
+      });
+      const locked = !!GameState.ui.actionMode;
+
+      const html = opts.map(o=>{
+        const used = !GameState.remainingTokenIds.includes(o.tokenId);
+        const disabled = used || locked;
+        let btnText = Render.actName(o.act);
+        if(o.act === ACT.ALIBI && who === PLAYER.JACK && !disabled){
+          btnText = "抽牌<br><span style='font-size:10px;font-weight:normal;'>请确保${skinInvName()}不在屏幕</span>";
+        }
+        return `
+          <div class="actionBtn ${(disabled)?"used":""}" data-action="${o.tokenId}" ${(disabled)?"style=\"pointer-events:none;\"":""}>
+            <div class="title">${btnText}</div>
+          </div>
+        `;
+      }).join("");
+      actionsEl.innerHTML = html;
+      return;
+    }
+
+    if(GameState.phase==="WITNESS"){
+      titleEl.textContent = "目击阶段";
+      btnWitness.disabled = false;
+      actionsEl.innerHTML = "";
+      return;
+    }
+
+    if(GameState.phase==="SETUP"){
+      btnWitness.disabled = true;
+      titleEl.textContent = "开局设置";
+      const hasId = !!GameState.jack.identity;
+
+      if(skinHeader && !hasId){
+        skinHeader.style.display = "flex";
+        skinHeader.innerHTML = `<div class="skinTitle">皮肤：${activeSkin().label}（仅身份牌前可切换）</div>`;
+      }
+
+      const skinBtns = !hasId ? `
+        <div class="skinPickRow">
+          ${Object.keys(SKINS).map(k=>`<button class="${k===currentSkinKey?"primary":"ghost"}" data-skin="${k}">${SKINS[k].label}</button>`).join("")}
+        </div>
+      ` : "";
+
+      actionsEl.innerHTML = `
+        ${skinBtns}
+        <div style="grid-column:1 / -1; display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="primary" id="btnDrawId" style="flex:1;" ${hasId?"disabled":""} onclick="Actions.jackDrawIdentity()">
+            ${skinJackName()}抽身份牌<br><span style="font-size:11px;font-weight:normal;">请确保${skinInvName()}不在看屏幕</span>
+          </button>
+          <button class="primary" id="btnStart" style="flex:1;" ${hasId?"":"disabled"} onclick="Actions.startGame()">
+            开始第1回合
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    btnWitness.disabled = true;
+    titleEl.textContent = "游戏结束";
     actionsEl.innerHTML = `
-      ${skinBtns}
-      <div style="grid-column:1 / -1; display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="primary" id="btnDrawId" style="flex:1;" ${hasId?"disabled":""}>${skinJackName()}抽身份牌<br><span style="font-size:11px;font-weight:normal;">请确保${skinInvName()}不在看屏幕</span></button>
-        <button class="primary" id="btnStart" style="flex:1;" ${hasId?"":"disabled"}>开始第1回合</button>
+      <div class="actionBtn" style="grid-column: 1 / -1;">
+        <div class="title">点击右上角“重开”开始新局</div>
+        <div class="meta">或点击“${skinJackName()} 私密”查看身份与隐藏Alibi。</div>
       </div>
     `;
-    return;
-  }
-
-  // GAME_OVER
-  btnWitness.disabled = true;
-  titleEl.textContent = "游戏结束";
-  actionsEl.innerHTML = `
-    <div class="actionBtn" style="grid-column: 1 / -1;">
-      <div class="title">点击右上角“重开”开始新局</div>
-      <div class="meta">或点击“${skinJackName()} 私密”查看身份与隐藏Alibi。</div>
-    </div>
-  `;
-},
+  },
 
   renderLog(){
     const el=document.getElementById("log");
-    // 默认显示容器高度内的最新日志；允许滚动查看历史（不删除旧数据）
     const stickBottom = (el.scrollHeight - el.scrollTop - el.clientHeight) < 20;
     const lines = GameState.log.map(s=>`<div class="line">${s}</div>`).join("");
     el.innerHTML = lines;
@@ -2977,7 +2717,6 @@ renderActions(){
     }
     ov.classList.remove("hidden");
 
-    // helpers
     const footer = (btns)=> `<div class="footerBtns">${btns.join("")}</div>`;
 
     if(o.type==="PASS"){
@@ -3146,7 +2885,6 @@ renderActions(){
       return;
     }
 
-    // default fallback
     ov.innerHTML = `
       <div class="sheet">
         <h2>未知弹窗</h2>
@@ -3159,7 +2897,6 @@ renderActions(){
 
   renderModal(){
     const o = GameState.ui.modal;
-    // 模态用 overlay 的 sheet 简化（同层逻辑）
     if(!o) return;
 
     const ov = document.getElementById("overlay");
@@ -3182,7 +2919,6 @@ renderActions(){
       document.getElementById("mv1").onclick=()=>Actions.doMove(o.det,1);
       document.getElementById("mv2").onclick=()=>Actions.doMove(o.det,2);
       document.getElementById("cancel").onclick=()=>{
-        // 取消：回滚本次选 token（为了简单，本版本不回滚；直接提示重选会复杂）
         Actions.closeModal();
         Actions.pushOverlay({ type:"INFO", title:"已取消", text:"为保持流程一致，已选走的行动无法回滚。请继续下一步。" });
         Actions.advanceStep();
@@ -3274,7 +3010,6 @@ renderActions(){
     syncCardHighlight();
     if(typeof syncResponsiveLayout === "function") syncResponsiveLayout();
 
-    // overlay priority: modal > overlay
     if(GameState.ui.modal){
       Render.renderModal();
     }else{
@@ -3294,7 +3029,6 @@ document.getElementById("btnRestart").onclick = ()=> {
     title:"确认重开？",
     text:"本局进度将丢失（本版本按要求不使用本地存储）。点击下方“确定重开”。"
   });
-  // patch: reuse overlay by converting into confirm
   const ov = document.getElementById("overlay");
   setTimeout(()=>{
     if(GameState.ui.overlay && GameState.ui.overlay.type==="INFO"){
@@ -3310,7 +3044,6 @@ document.getElementById("btnRestart").onclick = ()=> {
 
 document.getElementById("btnRules").onclick = ()=> Actions.pushOverlay({ type:"RULES" });
 
-// 顶部按钮区：关闭/开启交接提示（passHint）
 const btnPassHint = document.getElementById("btnPassHint");
 if(btnPassHint){
   btnPassHint.textContent = GameState.passHint ? "交接(开)" : "交接(关)";
@@ -3329,37 +3062,26 @@ document.getElementById("btnJackSecret").onclick = ()=>{
 };
 
 document.getElementById("btnWitness").onclick = ()=> Actions.doWitness();
-// btnEditWalls 已隐藏（保留数据结构，不提供入口）
 
-// grid click delegation
 document.getElementById("grid").addEventListener("click", (e)=>{
   const t = e.target.closest("[data-tile]");
   if(t){
     const [r,c]=t.getAttribute("data-tile").split(",").map(x=>parseInt(x,10));
-    // Action Mode 下的棋盘点击控制
     if(GameState.ui.actionMode){
       const am = GameState.ui.actionMode;
-
-      // Rotate：先选牌进入预览（不做规则判定，不修改 GameState.rot）
       if(am.type==="ROTATE"){
         Actions.rotatePickTile(r,c);
         return;
       }
-
-      // Swap：依次点击两张牌
       if(am.type==="SWAP"){
         Actions.exchangePick(r,c);
         return;
       }
-
-      // 其他 Action Mode：忽略棋盘点击（给轻提示）
       Actions.hint("当前行动不需要点击棋盘");
       return;
     }
-    // 编辑墙：选中 tile
     if(GameState.phase==="SETUP" && GameState.ui.editWalls){
       Actions.selectTile(r,c);
-      // 弹出边编辑面板
       const sel = GameState.ui.selected;
       const tile = GameState.tiles[sel.r][sel.c];
       const walls = Rules.rotatedWalls(tile);
@@ -3367,7 +3089,6 @@ document.getElementById("grid").addEventListener("click", (e)=>{
         type:"WALL_EDITOR",
         r: sel.r, c: sel.c
       });
-      // replace overlay content manually (since we keep overlay types small, we render here)
       const ov = document.getElementById("overlay");
       setTimeout(()=>{
         const sel2 = GameState.ui.selected;
@@ -3422,11 +3143,8 @@ document.getElementById("grid").addEventListener("click", (e)=>{
       return;
     }
   }
-
-  // ring click:（可扩展为手动移动侦探；本版本移动只通过行动）
 });
 
-// actions click
 document.getElementById("actions").addEventListener("click", (e)=>{
   const a = e.target.closest("[data-action]");
   if(!a) return;
@@ -3436,27 +3154,14 @@ document.getElementById("actions").addEventListener("click", (e)=>{
   Actions.pickAction(tokenId);
 });
 
-// setup buttons inside actions area (dynamic)
 document.getElementById("actions").addEventListener("click", (e)=>{
   const skinBtn = e.target.closest("[data-skin]");
   if(skinBtn){
     Actions.setSkin(skinBtn.getAttribute("data-skin"));
     return;
   }
-  const draw = e.target.closest("#btnDrawId");
-  if(draw){
-    Actions.jackDrawIdentity();
-    return;
-  }
-  const start = e.target.closest("#btnStart");
-  if(start){
-    Actions.startGame();
-    return;
-  }
 });
 
-
-/* === 20260715 responsive sizing: mobile keeps full-width board; desktop fits board beside controls === */
 const DESKTOP_BREAKPOINT = 900;
 
 function isDesktopLayout(){
@@ -3486,7 +3191,6 @@ function resizeBoard(){
   boardArea.style.height = size + "px";
 }
 
-/* Small-height fallback remains mobile-only; desktop has a dedicated two-column layout. */
 function autoScale(){
   const app = document.getElementById("app");
   if(!app) return;
@@ -3525,7 +3229,6 @@ function syncResponsiveLayout(){
 
 window.addEventListener("resize", syncResponsiveLayout);
 
-// initial render
 Render.render();
 syncResponsiveLayout();
 </script>
